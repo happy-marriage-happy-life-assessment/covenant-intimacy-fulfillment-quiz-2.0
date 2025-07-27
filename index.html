@@ -230,6 +230,35 @@ const questions = [
     {text:"Avoid conflict", b:"Steady Soul"},
     {text:"Assume I’ll be let down", b:"Tender Protector"}]}
 ];
+const intimacyDescriptions = {
+  Spiritual: "Shared faith and values form the foundation of your bond.",
+  Emotional: "You long to feel emotionally safe and deeply known.",
+  Commitment: "You thrive when trust and covenant loyalty feel secure.",
+  Intellectual: "You enjoy connecting through thoughtful conversations.",
+  Affable: "Playfulness, kindness, and joy build your connection.",
+  Recreational: "Fun and shared activities strengthen your bond.",
+  Partnership: "You value teamwork and shared decision-making.",
+  Financial: "Transparency with money strengthens trust and unity.",
+  Creative: "Collaborating on ideas or projects brings you closer.",
+  Conflict: "Respectful resolution of disagreements deepens intimacy.",
+  Physical: "Being close through touch helps you feel safe and loved.",
+  Sexual: "Sexual intimacy expresses affection, passion, and closeness."
+};
+
+const typeColors = {
+  Spiritual: "#FF4D4D",
+  Emotional: "#4D9DE0",
+  Commitment: "#1A3C5E",
+  Intellectual: "#C084FC",
+  Affable: "#A1B56C",
+  Recreational: "#FDC57B",
+  Partnership: "#D07E5F",
+  Financial: "#7BC1D1",
+  Creative: "#E085B2",
+  Conflict: "#F67599",
+  Physical: "#92C9D6",
+  Sexual: "#E6A94C"
+};
 
 let index=0, tempScores={}, intimacyScores={}, bondingScores={};
 ["Sanguine","Choleric","Melancholy","Phlegmatic","Supine"].forEach(t=>tempScores[t]=0);
@@ -263,29 +292,131 @@ function answer(i){
     showResults();
   }
 }
-function showResults(){
+function showResults() {
   document.getElementById("quizPage").classList.add("hidden");
   document.getElementById("resultPage").classList.remove("hidden");
-  document.getElementById("results").innerHTML = "<p>Results and chart will display here.</p>";
 
-  // Example Chart
+  // Sort intimacy scores
+  const sorted = Object.entries(intimacyScores).sort((a,b) => b[1] - a[1]);
+  const priority = sorted.slice(0, 4);
+  const progress = sorted.slice(4, 8);
+  const presence = sorted.slice(8, 12);
+
+  function sectionHTML(title, text, items) {
+    return `
+      <h3>${title}</h3>
+      <p>${text}</p>
+      ${items.map(([type,score]) => `
+        <div class="result-block" style="border-left:8px solid ${typeColors[type]}">
+          <strong>${type}</strong> (Score: ${score})<br/>
+          ${intimacyDescriptions[type]}
+        </div>
+      `).join("")}
+    `;
+  }
+
+  document.getElementById("results").innerHTML =
+    sectionHTML("Priority – Your Highest Intimacy Needs",
+      "These areas are most important for you to feel loved and connected.", priority) +
+    sectionHTML("Progress – Areas for Growth",
+      "These matter to you but may not feel as urgent as your top needs.", progress) +
+    sectionHTML("Presence – Often Overlooked, Still Essential",
+      "These are lower-scoring areas but still valuable for connection.", presence);
+
+  // Show chart
   const ctx = document.getElementById("intimacyChart");
   new Chart(ctx, {
     type: "bar",
     data: {
-      labels: Object.keys(intimacyScores),
+      labels: sorted.map(([type]) => type),
       datasets: [{
         label: "Scores",
-        data: Object.values(intimacyScores),
-        backgroundColor: "#4d9de0"
+        data: sorted.map(([_,score]) => score),
+        backgroundColor: sorted.map(([type]) => typeColors[type])
       }]
     }
   });
 }
 
-function generatePDF(){
-  alert("PDF + Email logic goes here.");
+
+async function generatePDF() {
+  const { jsPDF } = window.jspdf;
+  const pdf = new jsPDF("p", "pt", "a4");
+  const pageWidth = pdf.internal.pageSize.getWidth();
+  const pageHeight = pdf.internal.pageSize.getHeight();
+  const marginX = 40, marginY = 50, usableWidth = pageWidth - marginX * 2;
+
+  // ✅ 1️⃣ Cover Page
+  const logo = new Image();
+  logo.src = "logo.png";
+  await new Promise(r => logo.onload = r);
+  pdf.addImage(logo, "PNG", pageWidth/2 - 90, 70, 180, 90);
+
+  pdf.setFont("helvetica", "bold");
+  pdf.setFontSize(24);
+  pdf.text("Your Personalized Intimacy Profile", pageWidth/2, 200, { align: "center" });
+
+  pdf.setFont("helvetica", "normal");
+  pdf.setFontSize(14);
+  pdf.text("Based on the Covenant Intimacy Fulfillment Model™", pageWidth/2, 225, { align: "center" });
+
+  const userName = document.getElementById("nameInput").value || "Valued User";
+  const today = new Date().toLocaleDateString(undefined,{ month:"long", day:"numeric", year:"numeric" });
+  pdf.setFontSize(12);
+  pdf.text(`Prepared for ${userName} – ${today}`, pageWidth/2, 250, { align:"center" });
+
+  pdf.setFont("helvetica", "italic");
+  pdf.setFontSize(12);
+  pdf.text(
+    "This profile reveals how you uniquely prioritize the 12 types of intimacy God designed for marriage.",
+    pageWidth/2, 310, { align:"center", maxWidth: usableWidth }
+  );
+
+  pdf.setFillColor("#4D9DE0");
+  pdf.rect(marginX, pageHeight-50, usableWidth, 40, "F");
+  pdf.setTextColor("#FFFFFF");
+  pdf.setFont("helvetica","bold"); 
+  pdf.setFontSize(12);
+  pdf.text("HappyMarriageHappyLife.com  |  Helping Couples Build Lasting Love", pageWidth/2, pageHeight-25, { align:"center" });
+
+  // ✅ 2️⃣ Add Results Page
+  pdf.addPage();
+
+  const sorted = Object.entries(intimacyScores).sort((a,b)=>b[1]-a[1]);
+  const priority = sorted.slice(0,4);
+  const progress = sorted.slice(4,8);
+  const presence = sorted.slice(8,12);
+
+  function addSection(title,text,items,yStart){
+    pdf.setTextColor("#000000");
+    pdf.setFont("helvetica","bold");
+    pdf.setFontSize(16);
+    pdf.text(title, marginX, yStart);
+    pdf.setFont("helvetica","normal");
+    pdf.setFontSize(12);
+    pdf.text(text, marginX, yStart+18, { maxWidth: usableWidth });
+
+    let yPos = yStart+40;
+    items.forEach(([type,score])=>{
+      pdf.setFillColor(typeColors[type]);
+      pdf.rect(marginX, yPos, 6, 6, "F");
+      pdf.setTextColor("#000000");
+      pdf.text(`${type} (Score: ${score})`, marginX+12, yPos+5);
+      const desc = pdf.splitTextToSize(intimacyDescriptions[type], usableWidth-20);
+      pdf.text(desc, marginX+12, yPos+20);
+      yPos += desc.length * 14 + 25;
+    });
+    return yPos;
+  }
+
+  let y = marginY;
+  y = addSection("Priority – Your Highest Intimacy Needs","These areas are most important for you to feel loved and connected.",priority,y);
+  y = addSection("Progress – Areas for Growth","These matter to you but may not feel as urgent as your top needs.",progress,y+20);
+  addSection("Presence – Often Overlooked, Still Essential","These are lower-scoring areas but still valuable for connection.",presence,y+20);
+
+  pdf.save("Intimacy-Results.pdf");
 }
+
 </script>
 </body>
 </html>
