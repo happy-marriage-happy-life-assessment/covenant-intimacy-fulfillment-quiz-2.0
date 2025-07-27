@@ -60,19 +60,136 @@ const questions = [
     {text:"Offer thoughtful solutions or deep advice", t:"Melancholy", i:"Intellectual"},
     {text:"Sit close, listen, and reassure quietly", t:"Phlegmatic", i:"Emotional"},
     {text:"Pray or serve without being asked", t:"Supine", i:"Spiritual"}]},
+    
   {q:"On a weekend, you prefer to…", opts:[
     {text:"Do something fun or spontaneous", t:"Sanguine", i:"Recreational"},
     {text:"Work on a project or goal", t:"Choleric", i:"Partnership"},
     {text:"Read, think, or create", t:"Melancholy", i:"Creative"},
     {text:"Relax with family quietly", t:"Phlegmatic", i:"Emotional"},
     {text:"Help or serve in some way", t:"Supine", i:"Spiritual"}]},
+    
   {q:"When your spouse is sad, you tend to…", opts:[
     {text:"Make them laugh", t:"Sanguine", i:"Affable"},
     {text:"Try to fix their problem", t:"Choleric", i:"Commitment"},
     {text:"Offer a deep talk", t:"Melancholy", i:"Emotional"},
     {text:"Give comfort through presence", t:"Phlegmatic", i:"Physical"},
     {text:"Do a kind, helpful act", t:"Supine", i:"Spiritual"}]},
-  // ✅ Add all remaining 23 questions here (from my earlier list)
+    
+  {q:"In group settings, you…", opts:[
+    {text:"Talk and engage everyone", t:"Sanguine", i:"Affable"},
+    {text:"Take the lead or organize", t:"Choleric", i:"Partnership"},
+    {text:"Listen and analyze", t:"Melancholy", i:"Intellectual"},
+    {text:"Stay relaxed and follow along", t:"Phlegmatic", i:"Emotional"},
+    {text:"Quietly support others", t:"Supine", i:"Spiritual"}]},
+    
+  {q:"When planning a date night, you prefer…", opts:[
+    {text:"Something fun or surprising", t:"Sanguine", i:"Recreational"},
+    {text:"Something productive or goal-oriented", t:"Choleric", i:"Commitment"},
+    {text:"A deep, meaningful activity", t:"Melancholy", i:"Creative"},
+    {text:"Something low-key and comforting", t:"Phlegmatic", i:"Physical"},
+    {text:"Something that serves or honors your spouse", t:"Supine", i:"Spiritual"}]},
+    
+  {q:"When making decisions, you…", opts:[
+    {text:"Go with what feels fun", t:"Sanguine", i:"Affable"},
+    {text:"Decide quickly and take charge", t:"Choleric", i:"Partnership"},
+    {text:"Think through details", t:"Melancholy", i:"Intellectual"},
+    {text:"Go along to keep peace", t:"Phlegmatic", i:"Emotional"},
+    {text:"Ask what others want first", t:"Supine", i:"Commitment"}]},
+    
+  {q:"During conflict, you are most likely to…", opts:[
+    {text:"Joke to ease tension", t:"Sanguine", i:"Affable"},
+    {text:"Push for solutions", t:"Choleric", i:"Conflict"},
+    {text:"Retreat to think first", t:"Melancholy", i:"Intellectual"},
+    {text:"Stay calm and avoid escalation", t:"Phlegmatic", i:"Emotional"},
+    {text:"Try to please the other person", t:"Supine", i:"Commitment"}]},
+    
+  {q:"When expressing affection, you…", opts:[
+    {text:"Use fun words and excitement", t:"Sanguine", i:"Affable"},
+    {text:"Do things for your spouse", t:"Choleric", i:"Partnership"},
+    {text:"Write or say meaningful things", t:"Melancholy", i:"Creative"},
+    {text:"Use touch or quiet presence", t:"Phlegmatic", i:"Physical"},
+    {text:"Serve or sacrifice quietly", t:"Supine", i:"Spiritual"}]},
+    
+  {q:"If you had extra time in the day, you would…", opts:[
+    {text:"Plan a fun activity", t:"Sanguine", i:"Recreational"},
+    {text:"Get something accomplished", t:"Choleric", i:"Partnership"},
+    {text:"Work on a personal project", t:"Melancholy", i:"Creative"},
+    {text:"Relax or nap", t:"Phlegmatic", i:"Emotional"},
+    {text:"Help your spouse or family", t:"Supine", i:"Spiritual"}]},
+    
+  {q:"When your spouse forgets to thank you, you…", opts:[
+    {text:"Laugh it off", t:"Sanguine", i:"Affable"},
+    {text:"Remind them of your effort", t:"Choleric", i:"Commitment"},
+    {text:"Feel hurt but stay quiet", t:"Melancholy", i:"Emotional"},
+    {text:"Assume they didn’t mean it", t:"Phlegmatic", i:"Physical"},
+    {text:"Keep serving anyway", t:"Supine", i:"Spiritual"}]},
+    
+  {q:"I feel most loved when my spouse…", opts:[
+    {text:"Plans fun time together", i:"Recreational"},
+    {text:"Prays with me", i:"Spiritual"},
+    {text:"Shows physical affection", i:"Physical"},
+    {text:"Makes joint decisions with me", i:"Partnership"},
+    {text:"Talks deeply with me", i:"Emotional"}]},
+    
+  {q:"When I feel disconnected, I wish we could…", opts:[
+    {text:"Share laughs and inside jokes", i:"Affable"},
+    {text:"Work on shared goals", i:"Commitment"},
+    {text:"Have a deep talk", i:"Emotional"},
+    {text:"Be affectionate without pressure", i:"Physical"},
+    {text:"Pray or worship together", i:"Spiritual"}]},
+    
+  {q:"My favorite quality time is…", opts:[
+    {text:"Spontaneous outings", i:"Recreational"},
+    {text:"Talking about dreams", i:"Creative"},
+    {text:"Cuddling or being close", i:"Physical"},
+    {text:"Learning and growing together", i:"Intellectual"},
+    {text:"Serving in faith together", i:"Spiritual"}]},
+    
+  {q:"I feel safest in marriage when…", opts:[
+    {text:"We solve conflict well", i:"Conflict"},
+    {text:"We’re united in big decisions", i:"Commitment"},
+    {text:"We’re consistently affectionate", i:"Physical"},
+    {text:"We’re laughing and having fun", i:"Affable"},
+    {text:"We share faith and values", i:"Spiritual"}]},
+    
+  {q:"I feel proud of our marriage when…", opts:[
+    {text:"We manage life and money well", i:"Financial"},
+    {text:"We pray and serve together", i:"Spiritual"},
+    {text:"We stay playful", i:"Affable"},
+    {text:"We build or create something together", i:"Creative"},
+    {text:"We grow through deep talks", i:"Intellectual"}]},
+    
+  {q:"After a long day, what makes me feel most connected?", opts:[
+    {text:"Snuggling or holding hands", i:"Physical"},
+    {text:"Sharing a fun moment", i:"Affable"},
+    {text:"Working together on something simple", i:"Partnership"},
+    {text:"Talking about the day", i:"Emotional"},
+    {text:"Praying together", i:"Spiritual"}]},
+    
+  {q:"I feel most cared for when…", opts:[
+    {text:"My spouse does tasks for me", i:"Partnership"},
+    {text:"We pray together", i:"Spiritual"},
+    {text:"They listen deeply", i:"Emotional"},
+    {text:"We laugh together", i:"Affable"},
+    {text:"They surprise me with affection", i:"Physical"}]},
+    
+  {q:"A great day together includes…", opts:[
+    {text:"A fun activity", i:"Recreational"},
+    {text:"A meaningful talk", i:"Intellectual"},
+    {text:"Mutual decision-making", i:"Commitment"},
+    {text:"Spiritual connection", i:"Spiritual"},
+    {text:"Physical affection", i:"Physical"}]},
+    
+  {q:"When we argue, what helps me feel safe?", opts:[
+    {text:"Humor", i:"Affable"},
+    {text:"Clear solutions", i:"Conflict"},
+    {text:"Being held", i:"Physical"},
+    {text:"Praying together", i:"Spiritual"},
+    {text:"Deep talk to understand each other", i:"Emotional"}]},
+    
+  {q:"I feel closest when…", opts:[
+    {text:"We laugh and have
+
 ];
 let index=0, tempScores={}, intimacyScores={}, bondingScores={};
 ["Sanguine","Choleric","Melancholy","Phlegmatic","Supine"].forEach(t=>tempScores[t]=0);
