@@ -16,9 +16,6 @@
     .hidden { display:none; }
     .progress { font-weight: bold; margin: 10px 0; }
     .result-block { margin:15px 0; text-align:left; padding:15px; border-radius:8px; }
-    .priority { border-left:8px solid #FF4D4D; background:#ffeaea; }
-    .progress-cat { border-left:8px solid #4D9DE0; background:#e7f1fb; }
-    .presence { border-left:8px solid #6c757d; background:#f2f2f2; }
     .logo { display:block; margin:0 auto 15px auto; max-width:200px; }
   </style>
 </head>
@@ -45,9 +42,35 @@
   <div class="email-form">
     <input type="text" id="nameInput" placeholder="Your Name"/>
     <input type="email" id="emailInput" placeholder="Your Email"/>
-    <button class="btn" onclick="generatePDF()">Send & Download PDF</button>
+    <button class="btn" onclick="sendAndGeneratePDF()">Send & Download PDF</button>
   </div>
 </div>
+
+<script>
+/* ============================
+   🔹 INTIMACY DESCRIPTIONS
+============================ */
+const intimacyDescriptions = {
+  Spiritual: "Shared faith and values form the foundation of your bond.",
+  Emotional: "You long to feel emotionally safe and deeply known.",
+  Commitment: "You thrive when trust and covenant loyalty feel secure.",
+  Intellectual: "You enjoy connecting through thoughtful conversations.",
+  Affable: "Playfulness, kindness, and joy build your connection.",
+  Recreational: "Fun and shared activities strengthen your bond.",
+  Partnership: "You value teamwork and shared decision-making.",
+  Financial: "Transparency with money strengthens trust and unity.",
+  Creative: "Collaborating on ideas or projects brings you closer.",
+  Conflict: "Respectful resolution of disagreements deepens intimacy.",
+  Physical: "Being close through touch helps you feel safe and loved.",
+  Sexual: "Sexual intimacy expresses affection, passion, and closeness."
+};
+
+const typeColors = {
+  Spiritual:"#FF4D4D", Emotional:"#4D9DE0", Commitment:"#1A3C5E",
+  Intellectual:"#C084FC", Affable:"#A1B56C", Recreational:"#FDC57B",
+  Partnership:"#D07E5F", Financial:"#7BC1D1", Creative:"#E085B2",
+  Conflict:"#F67599", Physical:"#92C9D6", Sexual:"#E6A94C"
+};
 
 <script>
 // ========================
@@ -230,39 +253,40 @@ const questions = [
     {text:"Avoid conflict", b:"Steady Soul"},
     {text:"Assume I’ll be let down", b:"Tender Protector"}]}
 ];
-const intimacyDescriptions = {
-  Spiritual: "Shared faith and values form the foundation of your bond.",
-  Emotional: "You long to feel emotionally safe and deeply known.",
-  Commitment: "You thrive when trust and covenant loyalty feel secure.",
-  Intellectual: "You enjoy connecting through thoughtful conversations.",
-  Affable: "Playfulness, kindness, and joy build your connection.",
-  Recreational: "Fun and shared activities strengthen your bond.",
-  Partnership: "You value teamwork and shared decision-making.",
-  Financial: "Transparency with money strengthens trust and unity.",
-  Creative: "Collaborating on ideas or projects brings you closer.",
-  Conflict: "Respectful resolution of disagreements deepens intimacy.",
-  Physical: "Being close through touch helps you feel safe and loved.",
-  Sexual: "Sexual intimacy expresses affection, passion, and closeness."
-};
 
-const typeColors = {
-  Spiritual: "#FF4D4D",
-  Emotional: "#4D9DE0",
-  Commitment: "#1A3C5E",
-  Intellectual: "#C084FC",
-  Affable: "#A1B56C",
-  Recreational: "#FDC57B",
-  Partnership: "#D07E5F",
-  Financial: "#7BC1D1",
-  Creative: "#E085B2",
-  Conflict: "#F67599",
-  Physical: "#92C9D6",
-  Sexual: "#E6A94C"
-};
 
+/* ============================
+   🔹 STATE + HELPERS
+============================ */
 let index=0, tempScores={}, intimacyScores={}, bondingScores={};
 ["Sanguine","Choleric","Melancholy","Phlegmatic","Supine"].forEach(t=>tempScores[t]=0);
 
+function getAffectionPreferences() {
+  const highest = Object.entries(tempScores).sort((a,b)=>b[1]-a[1])[0][0];
+  switch(highest){
+    case "Sanguine": return {expressed:"Playful, verbal, and spontaneous affection", desired:"Emotional connection and physical touch"};
+    case "Choleric": return {expressed:"Acts of service and shared goals", desired:"Respect for decisions and partnership"};
+    case "Melancholy": return {expressed:"Thoughtful, deep, and creative gestures", desired:"Emotional depth and consistency"};
+    case "Phlegmatic": return {expressed:"Quiet presence, reliability, and calm care", desired:"Gentle affection and security"};
+    case "Supine": return {expressed:"Loyal, selfless service", desired:"Feeling pursued, affirmed, and emotionally safe"};
+    default: return {expressed:"Balanced affection", desired:"Balanced needs"};
+  }
+}
+
+function getBondingStyle() {
+  const highest = Object.entries(bondingScores).sort((a,b)=>b[1]-a[1])[0]?.[0] || "Anchored Connector";
+  switch(highest){
+    case "Anchored Connector": return "You feel safe with trust and open communication, reconnecting easily after conflict.";
+    case "Assurance Seeker": return "You thrive with frequent reassurance and closeness, feeling loved when affection is consistent.";
+    case "Steady Soul": return "You prefer steady, low-pressure connection and feel safest with calm interactions.";
+    case "Tender Protector": return "You need trust proven over time and may hesitate to depend on others until security is clear.";
+    default: return "";
+  }
+}
+
+/* ============================
+   🔹 QUIZ FLOW
+============================ */
 document.getElementById("startQuizBtn").addEventListener("click", startQuiz);
 
 function startQuiz(){
@@ -276,7 +300,7 @@ function showQuestion(){
   document.getElementById("progress").textContent = `Question ${index+1} of ${questions.length}`;
   let html = `<h3>${q.q}</h3>`;
   q.opts.forEach((o,i)=>{
-    html += `<button class='answer-btn' onclick='answer(${i})'>${o.text}</button>`;
+    html += `<button class="answer-btn" onclick="answer(${i})">${o.text}</button>`;
   });
   document.getElementById("questionContainer").innerHTML = html;
 }
@@ -285,208 +309,117 @@ function answer(i){
   const o = questions[index].opts[i];
   if(o.t) tempScores[o.t]++;
   if(o.i) intimacyScores[o.i]=(intimacyScores[o.i]||0)+1;
+  if(o.b) bondingScores[o.b]=(bondingScores[o.b]||0)+1;
   index++;
-  if(index<questions.length){
-    showQuestion();
-  } else {
-    showResults();
-  }
-}
-function getAffectionPreferences() {
-  // Determine highest temperament scores
-  const highest = Object.entries(tempScores).sort((a,b)=>b[1]-a[1])[0][0];
-  let expressed = "";
-  let desired = "";
-
-  switch(highest) {
-    case "Sanguine": expressed="Playful, verbal, and spontaneous affection"; desired="Emotional connection and physical touch";
-      break;
-    case "Choleric": expressed="Acts of service and shared goals"; desired="Respect for decisions and partnership";
-      break;
-    case "Melancholy": expressed="Thoughtful, deep, and creative gestures"; desired="Emotional depth and consistency";
-      break;
-    case "Phlegmatic": expressed="Quiet presence, reliability, and calm care"; desired="Gentle affection and security";
-      break;
-    case "Supine": expressed="Loyal, selfless service"; desired="Feeling pursued, affirmed, and emotionally safe";
-      break;
-  }
-  return { expressed, desired };
+  index<questions.length ? showQuestion() : showResults();
 }
 
-function getBondingStyle() {
-  // Count bonding style answers
-  const bondingCounts = { "Anchored Connector":0, "Assurance Seeker":0, "Steady Soul":0, "Tender Protector":0 };
-  questions.forEach((q,qi)=>{
-    if(q.opts.some(o=>o.b)){ /* bonding style questions only */
-      const selected = q.opts.find((o,i)=>intimacyScores[q.i]); 
-    }
-  });
-  // This part simplified: Pick highest bonding style from selected answers
-  // For simplicity in this example, we assume all bonding style answers are stored in bondingScores
-  const highest = Object.entries(bondingScores).sort((a,b)=>b[1]-a[1])[0][0] || "Anchored Connector";
-
-  switch(highest) {
-    case "Anchored Connector": return "Your bonding style feels safe with trust and open communication. You connect confidently and repair quickly after conflict.";
-    case "Assurance Seeker": return "Your bonding style feels valued with frequent reassurance and closeness. You thrive when love is expressed consistently.";
-    case "Steady Soul": return "Your bonding style feels comfortable with space and steady connection. You value a calm, low-pressure approach to closeness.";
-    case "Tender Protector": return "Your bonding style feels secure when trust is proven over time. You may hesitate to depend on others until trust feels solid.";
-    default: return "";
-  }
-}
-
-  function showResults() {
+/* ============================
+   🔹 RESULTS PAGE
+============================ */
+function showResults(){
   document.getElementById("quizPage").classList.add("hidden");
   document.getElementById("resultPage").classList.remove("hidden");
 
-  // Sort intimacy scores
-  const sorted = Object.entries(intimacyScores).sort((a,b) => b[1] - a[1]);
-  const priority = sorted.slice(0, 4);
-  const progress = sorted.slice(4, 8);
-  const presence = sorted.slice(8, 12);
+  const sorted = Object.entries(intimacyScores).sort((a,b)=>b[1]-a[1]);
+  const priority = sorted.slice(0,4), progress = sorted.slice(4,8), presence = sorted.slice(8,12);
 
-  function sectionHTML(title, text, items) {
-    return `
-      <h3>${title}</h3>
-      <p>${text}</p>
-      ${items.map(([type,score]) => `
-        <div class="result-block" style="border-left:8px solid ${typeColors[type]}">
-          <strong>${type}</strong> (Score: ${score})<br/>
-          ${intimacyDescriptions[type]}
-        </div>
-      `).join("")}
-    `;
+  function sectionHTML(title,text,items){
+    return `<h3>${title}</h3><p>${text}</p>` +
+    items.map(([type,score])=>`
+      <div class="result-block" style="border-left:8px solid ${typeColors[type]}">
+        <strong>${type}</strong> (Score: ${score})<br/>${intimacyDescriptions[type]}
+      </div>`).join("");
   }
-// Add Affection Preferences
-const affection = getAffectionPreferences();
-const bonding = getBondingStyle();
-
-document.getElementById("results").innerHTML += `
-  <hr/>
-  <h3>Affection Preferences</h3>
-  <p><strong>Expressed Affection:</strong> ${affection.expressed}</p>
-  <p><strong>Desired Affection Preference:</strong> ${affection.desired}</p>
-  
-  <h3>Bonding Style</h3>
-  <p>${bonding}</p>
-`;
 
   document.getElementById("results").innerHTML =
-    sectionHTML("Priority – Your Highest Intimacy Needs",
-      "These areas are most important for you to feel loved and connected.", priority) +
-    sectionHTML("Progress – Areas for Growth",
-      "These matter to you but may not feel as urgent as your top needs.", progress) +
-    sectionHTML("Presence – Often Overlooked, Still Essential",
-      "These are lower-scoring areas but still valuable for connection.", presence);
+    sectionHTML("Priority – Your Highest Intimacy Needs","These areas are most important for you to feel loved and connected.",priority)+
+    sectionHTML("Progress – Areas for Growth","These matter to you but may not feel as urgent as your top needs.",progress)+
+    sectionHTML("Presence – Often Overlooked, Still Essential","These are lower-scoring areas but still valuable for connection.",presence);
 
-  // Show chart
-  const ctx = document.getElementById("intimacyChart");
-  new Chart(ctx, {
-    type: "bar",
-    data: {
-      labels: sorted.map(([type]) => type),
-      datasets: [{
-        label: "Scores",
-        data: sorted.map(([_,score]) => score),
-        backgroundColor: sorted.map(([type]) => typeColors[type])
-      }]
-    }
-  });
-}
-
-
-async function generatePDF() {
-  const { jsPDF } = window.jspdf;
-  const pdf = new jsPDF("p", "pt", "a4");
-  const pageWidth = pdf.internal.pageSize.getWidth();
-  const pageHeight = pdf.internal.pageSize.getHeight();
-  const marginX = 40, marginY = 50, usableWidth = pageWidth - marginX * 2;
-
-  // ✅ 1️⃣ Cover Page
-  const logo = new Image();
-  logo.src = "logo.png";
-  await new Promise(r => logo.onload = r);
-  pdf.addImage(logo, "PNG", pageWidth/2 - 90, 70, 180, 90);
-
-  pdf.setFont("helvetica", "bold");
-  pdf.setFontSize(24);
-  pdf.text("Your Personalized Intimacy Profile", pageWidth/2, 200, { align: "center" });
-
-  pdf.setFont("helvetica", "normal");
-  pdf.setFontSize(14);
-  pdf.text("Based on the Covenant Intimacy Fulfillment Model™", pageWidth/2, 225, { align: "center" });
-
-  const userName = document.getElementById("nameInput").value || "Valued User";
-  const today = new Date().toLocaleDateString(undefined,{ month:"long", day:"numeric", year:"numeric" });
-  pdf.setFontSize(12);
-  pdf.text(`Prepared for ${userName} – ${today}`, pageWidth/2, 250, { align:"center" });
-
-  pdf.setFont("helvetica", "italic");
-  pdf.setFontSize(12);
-  pdf.text(
-    "This profile reveals how you uniquely prioritize the 12 types of intimacy God designed for marriage.",
-    pageWidth/2, 310, { align:"center", maxWidth: usableWidth }
-  );
-
-  pdf.setFillColor("#4D9DE0");
-  pdf.rect(marginX, pageHeight-50, usableWidth, 40, "F");
-  pdf.setTextColor("#FFFFFF");
-  pdf.setFont("helvetica","bold"); 
-  pdf.setFontSize(12);
-  pdf.text("HappyMarriageHappyLife.com  |  Helping Couples Build Lasting Love", pageWidth/2, pageHeight-25, { align:"center" });
-
-  // ✅ 2️⃣ Add Results Page
-  pdf.addPage();
-
-  const sorted = Object.entries(intimacyScores).sort((a,b)=>b[1]-a[1]);
-  const priority = sorted.slice(0,4);
-  const progress = sorted.slice(4,8);
-  const presence = sorted.slice(8,12);
-  // Add Affection Preferences + Bonding Style
-  pdf.addPage();
   const affection = getAffectionPreferences();
   const bonding = getBondingStyle();
 
-  pdf.setFont("helvetica","bold"); pdf.setFontSize(16);
-  pdf.text("Affection Preferences", marginX, marginY);
-  pdf.setFont("helvetica","normal"); pdf.setFontSize(12);
-  pdf.text(`Expressed Affection: ${affection.expressed}`, marginX, marginY+25, {maxWidth:usableWidth});
-  pdf.text(`Desired Affection Preference: ${affection.desired}`, marginX, marginY+45, {maxWidth:usableWidth});
+  document.getElementById("results").innerHTML += `
+    <hr/><h3>Affection Preferences</h3>
+    <p><strong>Expressed Affection:</strong> ${affection.expressed}</p>
+    <p><strong>Desired Affection Preference:</strong> ${affection.desired}</p>
+    <h3>Bonding Style</h3><p>${bonding}</p>`;
 
-  pdf.setFont("helvetica","bold"); pdf.setFontSize(16);
-  pdf.text("Bonding Style", marginX, marginY+90);
-  pdf.setFont("helvetica","normal"); pdf.setFontSize(12);
-  pdf.text(bonding, marginX, marginY+110, {maxWidth:usableWidth});
+  const ctx=document.getElementById("intimacyChart");
+  new Chart(ctx,{type:"bar",data:{labels:sorted.map(([t])=>t),
+    datasets:[{label:"Scores",data:sorted.map(([_,s])=>s),backgroundColor:sorted.map(([t])=>typeColors[t])}] }});
+}
 
-  function addSection(title,text,items,yStart){
-    pdf.setTextColor("#000000");
-    pdf.setFont("helvetica","bold");
-    pdf.setFontSize(16);
-    pdf.text(title, marginX, yStart);
-    pdf.setFont("helvetica","normal");
-    pdf.setFontSize(12);
-    pdf.text(text, marginX, yStart+18, { maxWidth: usableWidth });
+/* ============================
+   🔹 EMAIL + PDF
+============================ */
+async function sendAndGeneratePDF(){
+  const name=document.getElementById("nameInput").value;
+  const email=document.getElementById("emailInput").value;
+  await fetch("https://formspree.io/f/xgvzkwre",{method:"POST",headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({name,email,scores:intimacyScores})});
+  generatePDF();
+}
 
-    let yPos = yStart+40;
+async function generatePDF(){
+  const {jsPDF}=window.jspdf;
+  const pdf=new jsPDF("p","pt","a4");
+  const pageWidth=pdf.internal.pageSize.getWidth();
+  const pageHeight=pdf.internal.pageSize.getHeight();
+  const marginX=40,marginY=50,usableWidth=pageWidth-marginX*2;
+
+  const logo=new Image(); logo.src="logo.png"; await new Promise(r=>logo.onload=r);
+  pdf.addImage(logo,"PNG",pageWidth/2-90,70,180,90);
+  pdf.setFont("helvetica","bold"); pdf.setFontSize(24);
+  pdf.text("Your Personalized Intimacy Profile",pageWidth/2,200,{align:"center"});
+  pdf.setFont("helvetica","normal"); pdf.setFontSize(14);
+  pdf.text("Based on the Covenant Intimacy Fulfillment Model™",pageWidth/2,225,{align:"center"});
+  const userName=document.getElementById("nameInput").value||"Valued User";
+  const today=new Date().toLocaleDateString(undefined,{month:"long",day:"numeric",year:"numeric"});
+  pdf.setFontSize(12); pdf.text(`Prepared for ${userName} – ${today}`,pageWidth/2,250,{align:"center"});
+  pdf.setFillColor("#4D9DE0");
+  pdf.rect(marginX,pageHeight-50,usableWidth,40,"F");
+  pdf.setTextColor("#FFFFFF");
+  pdf.setFont("helvetica","bold"); pdf.setFontSize(12);
+  pdf.text("HappyMarriageHappyLife.com  |  Helping Couples Build Lasting Love",pageWidth/2,pageHeight-25,{align:"center"});
+
+  pdf.addPage();
+
+  const sorted=Object.entries(intimacyScores).sort((a,b)=>b[1]-a[1]);
+  const priority=sorted.slice(0,4),progress=sorted.slice(4,8),presence=sorted.slice(8,12);
+
+  function addSection(title,text,items,y){
+    pdf.setTextColor("#000"); pdf.setFont("helvetica","bold"); pdf.setFontSize(16); pdf.text(title,marginX,y);
+    pdf.setFont("helvetica","normal"); pdf.setFontSize(12); pdf.text(text,marginX,y+18,{maxWidth:usableWidth});
+    let yPos=y+40;
     items.forEach(([type,score])=>{
-      pdf.setFillColor(typeColors[type]);
-      pdf.rect(marginX, yPos, 6, 6, "F");
-      pdf.setTextColor("#000000");
-      pdf.text(`${type} (Score: ${score})`, marginX+12, yPos+5);
-      const desc = pdf.splitTextToSize(intimacyDescriptions[type], usableWidth-20);
-      pdf.text(desc, marginX+12, yPos+20);
-      yPos += desc.length * 14 + 25;
-    });
-    return yPos;
+      pdf.setFillColor(typeColors[type]); pdf.rect(marginX,yPos,6,6,"F");
+      pdf.setTextColor("#000"); pdf.text(`${type} (Score: ${score})`,marginX+12,yPos+5);
+      const desc=pdf.splitTextToSize(intimacyDescriptions[type],usableWidth-20);
+      pdf.text(desc,marginX+12,yPos+20); yPos+=desc.length*14+25;
+    }); return yPos;
   }
 
-  let y = marginY;
-  y = addSection("Priority – Your Highest Intimacy Needs","These areas are most important for you to feel loved and connected.",priority,y);
-  y = addSection("Progress – Areas for Growth","These matter to you but may not feel as urgent as your top needs.",progress,y+20);
+  let y=marginY;
+  y=addSection("Priority – Your Highest Intimacy Needs","These areas are most important for you to feel loved and connected.",priority,y);
+  y=addSection("Progress – Areas for Growth","These matter to you but may not feel as urgent as your top needs.",progress,y+20);
   addSection("Presence – Often Overlooked, Still Essential","These are lower-scoring areas but still valuable for connection.",presence,y+20);
+
+  pdf.addPage();
+  const affection=getAffectionPreferences(),bonding=getBondingStyle();
+  pdf.setFont("helvetica","bold"); pdf.setFontSize(16);
+  pdf.text("Affection Preferences",marginX,marginY);
+  pdf.setFont("helvetica","normal"); pdf.setFontSize(12);
+  pdf.text(`Expressed Affection: ${affection.expressed}`,marginX,marginY+25,{maxWidth:usableWidth});
+  pdf.text(`Desired Affection Preference: ${affection.desired}`,marginX,marginY+45,{maxWidth:usableWidth});
+  pdf.setFont("helvetica","bold"); pdf.setFontSize(16);
+  pdf.text("Bonding Style",marginX,marginY+90);
+  pdf.setFont("helvetica","normal"); pdf.setFontSize(12);
+  pdf.text(bonding,marginX,marginY+110,{maxWidth:usableWidth});
 
   pdf.save("Intimacy-Results.pdf");
 }
-
 </script>
 </body>
 </html>
