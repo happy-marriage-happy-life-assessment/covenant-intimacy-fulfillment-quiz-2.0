@@ -3,13 +3,13 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Combined Marriage Assessment</title>
+  <title>Marriage Connection Quiz</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <style>
     body { font-family: Arial, sans-serif; background: #fff9f2; color: #1a3c5e; max-width: 900px; margin: auto; padding: 20px; }
     h1,h2,h3 { text-align: center; }
     .card { background: #fff; border: 2px solid #4d9de0; border-radius: 12px; padding: 25px; box-shadow: 0 8px 25px rgba(0,0,0,0.08); margin: 20px auto; max-width: 700px; text-align: center; }
-    .btn, .answer-btn { background: #4d9de0; color: white; font-weight: bold; border: none; border-radius: 8px; padding: 12px 20px; cursor: pointer; margin: 10px 0; display: block; width: 100%; max-width: 300px; }
+    .btn, .answer-btn { background: #4d9de0; color: white; font-weight: bold; border: none; border-radius: 8px; padding: 12px 20px; cursor: pointer; margin: 10px 0; display: block; width: 100%; max-width: 500px; }
     .btn:hover, .answer-btn:hover { background: #3a7fbf; }
     .hidden { display:none; }
     .progress { font-weight: bold; margin: 10px 0; }
@@ -20,7 +20,7 @@
 <body>
 
 <div id="introPage" class="card">
-  <h1>Discover Your Connection Profile</h1>
+  <h1>Discover Your Marriage Connection Profile</h1>
   <p>Answer 26 situational questions to reveal how you love, connect, and build trust in marriage.</p>
   <button class="btn" onclick="startQuiz()">Start Assessment</button>
 </div>
@@ -40,110 +40,186 @@
     <input type="email" id="emailInput" placeholder="Your Email"/>
     <button class="btn" onclick="downloadPDF()">Download PDF</button>
   </div>
-
-  <div class="card" style="margin-top:20px;">
-    <h3>Couples Comparison</h3>
-    <p>Share your code with your spouse and paste theirs to see combined insights.</p>
-    <input type="text" id="partnerCode" placeholder="Partner's Code"/>
-    <button class="btn" onclick="compareResults()">Compare</button>
-    <div id="comparison"></div>
-  </div>
 </div>
 
 <script>
-/* ---------------- DATA ---------------- */
+/* ---------------- ALL 26 QUESTIONS ---------------- */
 const questions = [
-  /* Temperament (1–10) */
+  /* Temperament Questions (1-10) */
   {q:"When your spouse is stressed, you naturally…", opts:[
-    {t:"Sanguine", i:"Affable"}, {t:"Choleric", i:"Partnership"}, {t:"Melancholy", i:"Intellectual"},
-    {t:"Phlegmatic", i:"Emotional"}, {t:"Supine", i:"Spiritual"}]},
+    {text:"Crack a joke or lighten the mood", t:"Sanguine", i:"Affable"},
+    {text:"Take charge and fix the issue", t:"Choleric", i:"Partnership"},
+    {text:"Offer thoughtful solutions or deep advice", t:"Melancholy", i:"Intellectual"},
+    {text:"Sit close, listen, and reassure quietly", t:"Phlegmatic", i:"Emotional"},
+    {text:"Pray or serve without being asked", t:"Supine", i:"Spiritual"}]},
   {q:"On a weekend, you prefer to…", opts:[
-    {t:"Sanguine", i:"Recreational"}, {t:"Choleric", i:"Partnership"}, {t:"Melancholy", i:"Creative"},
-    {t:"Phlegmatic", i:"Emotional"}, {t:"Supine", i:"Spiritual"}]},
-  {q:"When your spouse is sad, you…", opts:[
-    {t:"Sanguine", i:"Affable"}, {t:"Choleric", i:"Commitment"}, {t:"Melancholy", i:"Emotional"},
-    {t:"Phlegmatic", i:"Physical"}, {t:"Supine", i:"Spiritual"}]},
+    {text:"Do something fun or spontaneous", t:"Sanguine", i:"Recreational"},
+    {text:"Work on a project or goal", t:"Choleric", i:"Partnership"},
+    {text:"Read, think, or create", t:"Melancholy", i:"Creative"},
+    {text:"Relax with family quietly", t:"Phlegmatic", i:"Emotional"},
+    {text:"Help or serve in some way", t:"Supine", i:"Spiritual"}]},
+  {q:"When your spouse is sad, you tend to…", opts:[
+    {text:"Make them laugh", t:"Sanguine", i:"Affable"},
+    {text:"Try to fix their problem", t:"Choleric", i:"Commitment"},
+    {text:"Offer a deep talk", t:"Melancholy", i:"Emotional"},
+    {text:"Give comfort through presence", t:"Phlegmatic", i:"Physical"},
+    {text:"Do a kind, helpful act", t:"Supine", i:"Spiritual"}]},
   {q:"In group settings, you…", opts:[
-    {t:"Sanguine", i:"Affable"}, {t:"Choleric", i:"Partnership"}, {t:"Melancholy", i:"Intellectual"},
-    {t:"Phlegmatic", i:"Emotional"}, {t:"Supine", i:"Spiritual"}]},
+    {text:"Talk and engage everyone", t:"Sanguine", i:"Affable"},
+    {text:"Take the lead or organize", t:"Choleric", i:"Partnership"},
+    {text:"Listen and analyze", t:"Melancholy", i:"Intellectual"},
+    {text:"Stay relaxed and follow along", t:"Phlegmatic", i:"Emotional"},
+    {text:"Quietly support others", t:"Supine", i:"Spiritual"}]},
   {q:"When planning a date night, you prefer…", opts:[
-    {t:"Sanguine", i:"Recreational"}, {t:"Choleric", i:"Commitment"}, {t:"Melancholy", i:"Creative"},
-    {t:"Phlegmatic", i:"Physical"}, {t:"Supine", i:"Spiritual"}]},
+    {text:"Something fun or surprising", t:"Sanguine", i:"Recreational"},
+    {text:"Something productive or goal-oriented", t:"Choleric", i:"Commitment"},
+    {text:"A deep, meaningful activity", t:"Melancholy", i:"Creative"},
+    {text:"Something low-key and comforting", t:"Phlegmatic", i:"Physical"},
+    {text:"Something that serves or honors your spouse", t:"Supine", i:"Spiritual"}]},
   {q:"When making decisions, you…", opts:[
-    {t:"Sanguine", i:"Affable"}, {t:"Choleric", i:"Partnership"}, {t:"Melancholy", i:"Intellectual"},
-    {t:"Phlegmatic", i:"Emotional"}, {t:"Supine", i:"Commitment"}]},
+    {text:"Go with what feels fun", t:"Sanguine", i:"Affable"},
+    {text:"Decide quickly and take charge", t:"Choleric", i:"Partnership"},
+    {text:"Think through details", t:"Melancholy", i:"Intellectual"},
+    {text:"Go along to keep peace", t:"Phlegmatic", i:"Emotional"},
+    {text:"Ask what others want first", t:"Supine", i:"Commitment"}]},
   {q:"During conflict, you are most likely to…", opts:[
-    {t:"Sanguine", i:"Affable"}, {t:"Choleric", i:"Conflict"}, {t:"Melancholy", i:"Intellectual"},
-    {t:"Phlegmatic", i:"Emotional"}, {t:"Supine", i:"Commitment"}]},
+    {text:"Joke to ease tension", t:"Sanguine", i:"Affable"},
+    {text:"Push for solutions", t:"Choleric", i:"Conflict"},
+    {text:"Retreat to think first", t:"Melancholy", i:"Intellectual"},
+    {text:"Stay calm and avoid escalation", t:"Phlegmatic", i:"Emotional"},
+    {text:"Try to please the other person", t:"Supine", i:"Commitment"}]},
   {q:"When expressing affection, you…", opts:[
-    {t:"Sanguine", i:"Affable"}, {t:"Choleric", i:"Partnership"}, {t:"Melancholy", i:"Creative"},
-    {t:"Phlegmatic", i:"Physical"}, {t:"Supine", i:"Spiritual"}]},
+    {text:"Use fun words and excitement", t:"Sanguine", i:"Affable"},
+    {text:"Do things for your spouse", t:"Choleric", i:"Partnership"},
+    {text:"Write or say meaningful things", t:"Melancholy", i:"Creative"},
+    {text:"Use touch or quiet presence", t:"Phlegmatic", i:"Physical"},
+    {text:"Serve or sacrifice quietly", t:"Supine", i:"Spiritual"}]},
   {q:"If you had extra time in the day, you would…", opts:[
-    {t:"Sanguine", i:"Recreational"}, {t:"Choleric", i:"Partnership"}, {t:"Melancholy", i:"Creative"},
-    {t:"Phlegmatic", i:"Emotional"}, {t:"Supine", i:"Spiritual"}]},
+    {text:"Plan a fun activity", t:"Sanguine", i:"Recreational"},
+    {text:"Get something accomplished", t:"Choleric", i:"Partnership"},
+    {text:"Work on a personal project", t:"Melancholy", i:"Creative"},
+    {text:"Relax or nap", t:"Phlegmatic", i:"Emotional"},
+    {text:"Help your spouse or family", t:"Supine", i:"Spiritual"}]},
   {q:"When your spouse forgets to thank you, you…", opts:[
-    {t:"Sanguine", i:"Affable"}, {t:"Choleric", i:"Commitment"}, {t:"Melancholy", i:"Emotional"},
-    {t:"Phlegmatic", i:"Physical"}, {t:"Supine", i:"Spiritual"}]},
-  /* Intimacy (11–20) */
+    {text:"Laugh it off", t:"Sanguine", i:"Affable"},
+    {text:"Remind them of your effort", t:"Choleric", i:"Commitment"},
+    {text:"Feel hurt but stay quiet", t:"Melancholy", i:"Emotional"},
+    {text:"Assume they didn’t mean it", t:"Phlegmatic", i:"Physical"},
+    {text:"Keep serving anyway", t:"Supine", i:"Spiritual"}]},
+  /* Intimacy Questions (11-20) */
   {q:"I feel most loved when my spouse…", opts:[
-    {i:"Recreational"}, {i:"Spiritual"}, {i:"Physical"}, {i:"Partnership"}, {i:"Emotional"}]},
+    {text:"Plans fun time together", i:"Recreational"},
+    {text:"Prays with me", i:"Spiritual"},
+    {text:"Shows physical affection", i:"Physical"},
+    {text:"Makes joint decisions with me", i:"Partnership"},
+    {text:"Talks deeply with me", i:"Emotional"}]},
   {q:"When I feel disconnected, I wish we could…", opts:[
-    {i:"Affable"}, {i:"Commitment"}, {i:"Emotional"}, {i:"Physical"}, {i:"Spiritual"}]},
+    {text:"Share laughs and inside jokes", i:"Affable"},
+    {text:"Work on shared goals", i:"Commitment"},
+    {text:"Have a deep talk", i:"Emotional"},
+    {text:"Be affectionate without pressure", i:"Physical"},
+    {text:"Pray or worship together", i:"Spiritual"}]},
   {q:"My favorite quality time is…", opts:[
-    {i:"Recreational"}, {i:"Creative"}, {i:"Physical"}, {i:"Intellectual"}, {i:"Spiritual"}]},
+    {text:"Spontaneous outings", i:"Recreational"},
+    {text:"Talking about dreams", i:"Creative"},
+    {text:"Cuddling or being close", i:"Physical"},
+    {text:"Learning and growing together", i:"Intellectual"},
+    {text:"Serving in faith together", i:"Spiritual"}]},
   {q:"I feel safest in marriage when…", opts:[
-    {i:"Conflict"}, {i:"Commitment"}, {i:"Physical"}, {i:"Affable"}, {i:"Spiritual"}]},
+    {text:"We solve conflict well", i:"Conflict"},
+    {text:"We’re united in big decisions", i:"Commitment"},
+    {text:"We’re consistently affectionate", i:"Physical"},
+    {text:"We’re laughing and having fun", i:"Affable"},
+    {text:"We share faith and values", i:"Spiritual"}]},
   {q:"I feel proud of our marriage when…", opts:[
-    {i:"Financial"}, {i:"Spiritual"}, {i:"Affable"}, {i:"Creative"}, {i:"Intellectual"}]},
+    {text:"We manage life and money well", i:"Financial"},
+    {text:"We pray and serve together", i:"Spiritual"},
+    {text:"We stay playful", i:"Affable"},
+    {text:"We build or create something together", i:"Creative"},
+    {text:"We grow through deep talks", i:"Intellectual"}]},
   {q:"After a long day, what makes me feel most connected?", opts:[
-    {i:"Physical"}, {i:"Affable"}, {i:"Partnership"}, {i:"Emotional"}, {i:"Spiritual"}]},
+    {text:"Snuggling or holding hands", i:"Physical"},
+    {text:"Sharing a fun moment", i:"Affable"},
+    {text:"Working together on something simple", i:"Partnership"},
+    {text:"Talking about the day", i:"Emotional"},
+    {text:"Praying together", i:"Spiritual"}]},
   {q:"I feel most cared for when…", opts:[
-    {i:"Partnership"}, {i:"Spiritual"}, {i:"Emotional"}, {i:"Affable"}, {i:"Physical"}]},
+    {text:"My spouse does tasks for me", i:"Partnership"},
+    {text:"We pray together", i:"Spiritual"},
+    {text:"They listen deeply", i:"Emotional"},
+    {text:"We laugh together", i:"Affable"},
+    {text:"They surprise me with affection", i:"Physical"}]},
   {q:"A great day together includes…", opts:[
-    {i:"Recreational"}, {i:"Intellectual"}, {i:"Commitment"}, {i:"Spiritual"}, {i:"Physical"}]},
+    {text:"A fun activity", i:"Recreational"},
+    {text:"A meaningful talk", i:"Intellectual"},
+    {text:"Mutual decision-making", i:"Commitment"},
+    {text:"Spiritual connection", i:"Spiritual"},
+    {text:"Physical affection", i:"Physical"}]},
   {q:"When we argue, what helps me feel safe?", opts:[
-    {i:"Affable"}, {i:"Conflict"}, {i:"Physical"}, {i:"Spiritual"}, {i:"Emotional"}]},
+    {text:"Humor", i:"Affable"},
+    {text:"Clear solutions", i:"Conflict"},
+    {text:"Being held", i:"Physical"},
+    {text:"Praying together", i:"Spiritual"},
+    {text:"Deep talk to understand each other", i:"Emotional"}]},
   {q:"I feel closest when…", opts:[
-    {i:"Recreational"}, {i:"Partnership"}, {i:"Emotional"}, {i:"Spiritual"}, {i:"Physical"}]},
-  /* Bonding (21–26) */
+    {text:"We laugh and have fun", i:"Recreational"},
+    {text:"We achieve something together", i:"Partnership"},
+    {text:"We talk deeply", i:"Emotional"},
+    {text:"We share our faith", i:"Spiritual"},
+    {text:"We are physically close", i:"Physical"}]},
+  /* Bonding Style Questions (21-26) */
   {q:"When conflict happens, I usually…", opts:[
-    {b:"Anchored Connector"}, {b:"Assurance Seeker"}, {b:"Steady Soul"}, {b:"Tender Protector"}]},
+    {text:"Talk it out calmly", b:"Anchored Connector"},
+    {text:"Seek reassurance and closeness", b:"Assurance Seeker"},
+    {text:"Withdraw to think first", b:"Steady Soul"},
+    {text:"Feel unsure if I can trust or stay close", b:"Tender Protector"}]},
   {q:"If my spouse seems distant, I…", opts:[
-    {b:"Anchored Connector"}, {b:"Assurance Seeker"}, {b:"Steady Soul"}, {b:"Tender Protector"}]},
+    {text:"Ask calmly about it", b:"Anchored Connector"},
+    {text:"Worry they’re upset with me", b:"Assurance Seeker"},
+    {text:"Wait for them to come to me", b:"Steady Soul"},
+    {text:"Assume the worst", b:"Tender Protector"}]},
   {q:"After a fight, I…", opts:[
-    {b:"Anchored Connector"}, {b:"Assurance Seeker"}, {b:"Steady Soul"}, {b:"Tender Protector"}]},
+    {text:"Try to reconnect quickly", b:"Anchored Connector"},
+    {text:"Need lots of reassurance", b:"Assurance Seeker"},
+    {text:"Prefer space before reconnecting", b:"Steady Soul"},
+    {text:"Struggle to feel safe trusting again", b:"Tender Protector"}]},
   {q:"When I feel hurt, I…", opts:[
-    {b:"Anchored Connector"}, {b:"Assurance Seeker"}, {b:"Steady Soul"}, {b:"Tender Protector"}]},
+    {text:"Express my feelings calmly", b:"Anchored Connector"},
+    {text:"Get anxious or clingy", b:"Assurance Seeker"},
+    {text:"Keep it inside", b:"Steady Soul"},
+    {text:"Pull away or shut down", b:"Tender Protector"}]},
   {q:"I feel safest when…", opts:[
-    {b:"Anchored Connector"}, {b:"Assurance Seeker"}, {b:"Steady Soul"}, {b:"Tender Protector"}]},
+    {text:"We talk and repair things quickly", b:"Anchored Connector"},
+    {text:"My spouse reassures me often", b:"Assurance Seeker"},
+    {text:"My spouse gives me space", b:"Steady Soul"},
+    {text:"I see proof they can be trusted", b:"Tender Protector"}]},
   {q:"If I sense rejection, I…", opts:[
-    {b:"Anchored Connector"}, {b:"Assurance Seeker"}, {b:"Steady Soul"}, {b:"Tender Protector"}]}
+    {text:"Communicate honestly", b:"Anchored Connector"},
+    {text:"Worry or overthink", b:"Assurance Seeker"},
+    {text:"Avoid conflict", b:"Steady Soul"},
+    {text:"Assume I’ll be let down", b:"Tender Protector"}]}
 ];
 
 let index=0,tempScores={},intimacyScores={},bondingScores={};
 ["Sanguine","Choleric","Melancholy","Phlegmatic","Supine"].forEach(t=>tempScores[t]=0);
 ["Anchored Connector","Assurance Seeker","Steady Soul","Tender Protector"].forEach(b=>bondingScores[b]=0);
 
-function startQuiz(){
-  document.getElementById("introPage").classList.add("hidden");
-  document.getElementById("quizPage").classList.remove("hidden");
-  showQuestion();
-}
+function startQuiz(){ document.getElementById("introPage").classList.add("hidden"); document.getElementById("quizPage").classList.remove("hidden"); showQuestion(); }
 
 function showQuestion(){
   const q=questions[index];
   document.getElementById("progress").textContent=`Question ${index+1} of ${questions.length}`;
   let html=`<h3>${q.q}</h3>`;
-  q.opts.forEach((o,i)=> html+=`<button class="answer-btn" onclick="answer(${i})">Option ${String.fromCharCode(65+i)}</button>`);
+  q.opts.forEach((o,i)=> html+=`<button class="answer-btn" onclick="answer(${i})">${o.text}</button>`);
   document.getElementById("questionContainer").innerHTML=html;
 }
 
 function answer(optIndex){
   const o=questions[index].opts[optIndex];
-  if(o.t) tempScores[o.t]++; if(o.i) intimacyScores[o.i]=(intimacyScores[o.i]||0)+1; if(o.b) bondingScores[o.b]++;
-  index++;
-  if(index<questions.length) showQuestion();
-  else showResults();
+  if(o.t) tempScores[o.t]++; 
+  if(o.i) intimacyScores[o.i]=(intimacyScores[o.i]||0)+1; 
+  if(o.b) bondingScores[o.b]=(bondingScores[o.b]||0)+1;
+  index++; if(index<questions.length) showQuestion(); else showResults();
 }
 
 function showResults(){
@@ -151,31 +227,20 @@ function showResults(){
   document.getElementById("resultPage").classList.remove("hidden");
   const topTemp=Object.entries(tempScores).sort((a,b)=>b[1]-a[1]);
   const topInt=Object.entries(intimacyScores).sort((a,b)=>b[1]-a[1]);
-  const topBond=Object.entries(bondingScores).sort((a,b)=>b[1]-a[1])[0][0];
+  const topBond=Object.entries(bondingScores).sort((a,b)=>b[1]-a[1])[0]?.[0] || "Not enough data";
+
   let html=`<div class='result-block'><strong>Primary Temperament:</strong> ${topTemp[0][0]}<br><strong>Secondary Temperament:</strong> ${topTemp[1][0]}</div>`;
   html+=`<div class='result-block'><strong>Top 3 Intimacy Needs:</strong> ${topInt.slice(0,3).map(i=>i[0]).join(", ")}</div>`;
   html+=`<div class='result-block'><strong>Bonding Style:</strong> ${topBond}</div>`;
-  html+=`<div class='result-block'><strong>Your Results Code:</strong><br>${btoa(JSON.stringify({tempScores,intimacyScores,bondingScores}))}</div>`;
   document.getElementById("results").innerHTML=html;
 }
 
 function downloadPDF(){
   const {jsPDF}=window.jspdf;
   const pdf=new jsPDF();
-  pdf.setFontSize(16); pdf.text("Connection Profile",20,20);
+  pdf.setFontSize(16); pdf.text("Marriage Connection Profile",20,20);
   pdf.setFontSize(12); pdf.text(document.getElementById("results").innerText,20,40,{maxWidth:170});
-  pdf.save("ConnectionProfile.pdf");
-}
-
-function compareResults(){
-  const partnerCode=document.getElementById("partnerCode").value;
-  try{
-    const partner=JSON.parse(atob(partnerCode));
-    const combined={};
-    for(let k in intimacyScores){combined[k]=(intimacyScores[k]||0)+(partner.intimacyScores?.[k]||0);}
-    const topShared=Object.entries(combined).sort((a,b)=>b[1]-a[1]).slice(0,3);
-    document.getElementById("comparison").innerHTML=`<p><strong>Shared Top Intimacy Priorities:</strong> ${topShared.map(x=>x[0]).join(", ")}</p>`;
-  }catch{ alert("Invalid partner code"); }
+  pdf.save("MarriageProfile.pdf");
 }
 </script>
 </body>
