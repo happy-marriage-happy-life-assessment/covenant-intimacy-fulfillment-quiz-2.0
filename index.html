@@ -292,7 +292,49 @@ function answer(i){
     showResults();
   }
 }
-function showResults() {
+function getAffectionPreferences() {
+  // Determine highest temperament scores
+  const highest = Object.entries(tempScores).sort((a,b)=>b[1]-a[1])[0][0];
+  let expressed = "";
+  let desired = "";
+
+  switch(highest) {
+    case "Sanguine": expressed="Playful, verbal, and spontaneous affection"; desired="Emotional connection and physical touch";
+      break;
+    case "Choleric": expressed="Acts of service and shared goals"; desired="Respect for decisions and partnership";
+      break;
+    case "Melancholy": expressed="Thoughtful, deep, and creative gestures"; desired="Emotional depth and consistency";
+      break;
+    case "Phlegmatic": expressed="Quiet presence, reliability, and calm care"; desired="Gentle affection and security";
+      break;
+    case "Supine": expressed="Loyal, selfless service"; desired="Feeling pursued, affirmed, and emotionally safe";
+      break;
+  }
+  return { expressed, desired };
+}
+
+function getBondingStyle() {
+  // Count bonding style answers
+  const bondingCounts = { "Anchored Connector":0, "Assurance Seeker":0, "Steady Soul":0, "Tender Protector":0 };
+  questions.forEach((q,qi)=>{
+    if(q.opts.some(o=>o.b)){ /* bonding style questions only */
+      const selected = q.opts.find((o,i)=>intimacyScores[q.i]); 
+    }
+  });
+  // This part simplified: Pick highest bonding style from selected answers
+  // For simplicity in this example, we assume all bonding style answers are stored in bondingScores
+  const highest = Object.entries(bondingScores).sort((a,b)=>b[1]-a[1])[0][0] || "Anchored Connector";
+
+  switch(highest) {
+    case "Anchored Connector": return "Your bonding style feels safe with trust and open communication. You connect confidently and repair quickly after conflict.";
+    case "Assurance Seeker": return "Your bonding style feels valued with frequent reassurance and closeness. You thrive when love is expressed consistently.";
+    case "Steady Soul": return "Your bonding style feels comfortable with space and steady connection. You value a calm, low-pressure approach to closeness.";
+    case "Tender Protector": return "Your bonding style feels secure when trust is proven over time. You may hesitate to depend on others until trust feels solid.";
+    default: return "";
+  }
+}
+
+  function showResults() {
   document.getElementById("quizPage").classList.add("hidden");
   document.getElementById("resultPage").classList.remove("hidden");
 
@@ -314,6 +356,19 @@ function showResults() {
       `).join("")}
     `;
   }
+// Add Affection Preferences
+const affection = getAffectionPreferences();
+const bonding = getBondingStyle();
+
+document.getElementById("results").innerHTML += `
+  <hr/>
+  <h3>Affection Preferences</h3>
+  <p><strong>Expressed Affection:</strong> ${affection.expressed}</p>
+  <p><strong>Desired Affection Preference:</strong> ${affection.desired}</p>
+  
+  <h3>Bonding Style</h3>
+  <p>${bonding}</p>
+`;
 
   document.getElementById("results").innerHTML =
     sectionHTML("Priority – Your Highest Intimacy Needs",
@@ -386,6 +441,21 @@ async function generatePDF() {
   const priority = sorted.slice(0,4);
   const progress = sorted.slice(4,8);
   const presence = sorted.slice(8,12);
+  // Add Affection Preferences + Bonding Style
+  pdf.addPage();
+  const affection = getAffectionPreferences();
+  const bonding = getBondingStyle();
+
+  pdf.setFont("helvetica","bold"); pdf.setFontSize(16);
+  pdf.text("Affection Preferences", marginX, marginY);
+  pdf.setFont("helvetica","normal"); pdf.setFontSize(12);
+  pdf.text(`Expressed Affection: ${affection.expressed}`, marginX, marginY+25, {maxWidth:usableWidth});
+  pdf.text(`Desired Affection Preference: ${affection.desired}`, marginX, marginY+45, {maxWidth:usableWidth});
+
+  pdf.setFont("helvetica","bold"); pdf.setFontSize(16);
+  pdf.text("Bonding Style", marginX, marginY+90);
+  pdf.setFont("helvetica","normal"); pdf.setFontSize(12);
+  pdf.text(bonding, marginX, marginY+110, {maxWidth:usableWidth});
 
   function addSection(title,text,items,yStart){
     pdf.setTextColor("#000000");
