@@ -188,9 +188,49 @@ const questions = [
     {text:"Deep talk to understand each other", i:"Emotional"}]},
     
   {q:"I feel closest when…", opts:[
-    {text:"We laugh and have
-
+    {text:"We laugh and have fun", i:"Recreational"},
+    {text:"We achieve something together", i:"Partnership"},
+    {text:"We talk deeply", i:"Emotional"},
+    {text:"We share our faith", i:"Spiritual"},
+    {text:"We are physically close", i:"Physical"}]},
+    
+  {q:"When conflict happens, I usually…", opts:[
+    {text:"Talk it out calmly", b:"Anchored Connector"},
+    {text:"Seek reassurance and closeness", b:"Assurance Seeker"},
+    {text:"Withdraw to think first", b:"Steady Soul"},
+    {text:"Feel unsure if I can trust or stay close", b:"Tender Protector"}]},
+    
+  {q:"If my spouse seems distant, I…", opts:[
+    {text:"Ask calmly about it", b:"Anchored Connector"},
+    {text:"Worry they’re upset with me", b:"Assurance Seeker"},
+    {text:"Wait for them to come to me", b:"Steady Soul"},
+    {text:"Assume the worst", b:"Tender Protector"}]},
+    
+  {q:"After a fight, I…", opts:[
+    {text:"Try to reconnect quickly", b:"Anchored Connector"},
+    {text:"Need lots of reassurance", b:"Assurance Seeker"},
+    {text:"Prefer space before reconnecting", b:"Steady Soul"},
+    {text:"Struggle to feel safe trusting again", b:"Tender Protector"}]},
+    
+  {q:"When I feel hurt, I…", opts:[
+    {text:"Express my feelings calmly", b:"Anchored Connector"},
+    {text:"Get anxious or clingy", b:"Assurance Seeker"},
+    {text:"Keep it inside", b:"Steady Soul"},
+    {text:"Pull away or shut down", b:"Tender Protector"}]},
+    
+  {q:"I feel safest when…", opts:[
+    {text:"We talk and repair things quickly", b:"Anchored Connector"},
+    {text:"My spouse reassures me often", b:"Assurance Seeker"},
+    {text:"My spouse gives me space", b:"Steady Soul"},
+    {text:"I see proof they can be trusted", b:"Tender Protector"}]},
+    
+  {q:"If I sense rejection, I…", opts:[
+    {text:"Communicate honestly", b:"Anchored Connector"},
+    {text:"Worry or overthink", b:"Assurance Seeker"},
+    {text:"Avoid conflict", b:"Steady Soul"},
+    {text:"Assume I’ll be let down", b:"Tender Protector"}]}
 ];
+
 let index=0, tempScores={}, intimacyScores={}, bondingScores={};
 ["Sanguine","Choleric","Melancholy","Phlegmatic","Supine"].forEach(t=>tempScores[t]=0);
 
