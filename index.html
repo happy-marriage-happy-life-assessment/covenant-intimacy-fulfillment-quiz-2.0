@@ -38,14 +38,12 @@
   <div class="email-form">
     <input type="text" id="nameInput" placeholder="Your Name"/>
     <input type="email" id="emailInput" placeholder="Your Email"/>
-    <button class="btn" onclick="downloadPDF()">Download PDF</button>
+    <button class="btn" onclick="generatePDF()">Download PDF</button>
   </div>
 </div>
 
 <script>
-/* ---------------- ALL 26 QUESTIONS ---------------- */
 const questions = [
-  /* Temperament Questions (1-10) */
   {q:"When your spouse is stressed, you naturally…", opts:[
     {text:"Crack a joke or lighten the mood", t:"Sanguine", i:"Affable"},
     {text:"Take charge and fix the issue", t:"Choleric", i:"Partnership"},
@@ -106,7 +104,6 @@ const questions = [
     {text:"Feel hurt but stay quiet", t:"Melancholy", i:"Emotional"},
     {text:"Assume they didn’t mean it", t:"Phlegmatic", i:"Physical"},
     {text:"Keep serving anyway", t:"Supine", i:"Spiritual"}]},
-  /* Intimacy Questions (11-20) */
   {q:"I feel most loved when my spouse…", opts:[
     {text:"Plans fun time together", i:"Recreational"},
     {text:"Prays with me", i:"Spiritual"},
@@ -167,7 +164,6 @@ const questions = [
     {text:"We talk deeply", i:"Emotional"},
     {text:"We share our faith", i:"Spiritual"},
     {text:"We are physically close", i:"Physical"}]},
-  /* Bonding Style Questions (21-26) */
   {q:"When conflict happens, I usually…", opts:[
     {text:"Talk it out calmly", b:"Anchored Connector"},
     {text:"Seek reassurance and closeness", b:"Assurance Seeker"},
@@ -235,13 +231,117 @@ function showResults(){
   document.getElementById("results").innerHTML=html;
 }
 
-function downloadPDF(){
-  const {jsPDF}=window.jspdf;
-  const pdf=new jsPDF();
-  pdf.setFontSize(16); pdf.text("Marriage Connection Profile",20,20);
-  pdf.setFontSize(12); pdf.text(document.getElementById("results").innerText,20,40,{maxWidth:170});
+async function generatePDF() {
+  const { jsPDF } = window.jspdf;
+  const pdf = new jsPDF("p", "pt", "a4");
+  const pageWidth = pdf.internal.pageSize.getWidth();
+  const pageHeight = pdf.internal.pageSize.getHeight();
+
+  const name = document.getElementById("nameInput").value || "Valued User";
+  const today = new Date().toLocaleDateString(undefined, { month: "long", day: "numeric", year: "numeric" });
+  const primaryBlue = "#4D9DE0";
+
+  pdf.setFont("helvetica", "bold");
+  pdf.setFontSize(26);
+  pdf.text("Your Personalized Connection Profile", pageWidth / 2, 150, { align: "center" });
+  pdf.setFontSize(16);
+  pdf.setFont("helvetica", "normal");
+  pdf.text("Based on the Covenant Intimacy Fulfillment Model™", pageWidth / 2, 180, { align: "center" });
+  pdf.setFontSize(12);
+  pdf.text(`Prepared for ${name} – ${today}`, pageWidth / 2, 210, { align: "center" });
+  pdf.setFontSize(14);
+  pdf.setFont("helvetica", "bold");
+  pdf.text("Discover Your Path to Deeper Connection", pageWidth / 2, 260, { align: "center" });
+  pdf.setFontSize(11);
+  pdf.setFont("helvetica", "normal");
+  pdf.text(
+    "This profile reveals how you uniquely connect and build intimacy in marriage. It shows your top temperament traits, bonding style, and intimacy needs—helping you and your spouse grow closer, stronger, and more intentional in your relationship.",
+    pageWidth / 2,
+    290,
+    { align: "center", maxWidth: pageWidth - 80 }
+  );
+  pdf.setFillColor(primaryBlue);
+  pdf.rect(0, pageHeight - 50, pageWidth, 50, "F");
+  pdf.setTextColor("#FFFFFF");
+  pdf.setFont("helvetica", "bold");
+  pdf.setFontSize(12);
+  pdf.text("HappyMarriageHappyLife.com  |  Helping Couples Build Lasting Love", pageWidth / 2, pageHeight - 20, { align: "center" });
+
+  pdf.addPage();
+
+  const topTemp = Object.entries(tempScores).sort((a,b)=>b[1]-a[1]);
+  const topInt = Object.entries(intimacyScores).sort((a,b)=>b[1]-a[1]);
+  const topBond = Object.entries(bondingScores).sort((a,b)=>b[1]-a[1])[0]?.[0] || "Not enough data";
+
+  const temperamentDesc = {
+    Sanguine:"Outgoing, fun-loving, expressive. Shows love through excitement and playfulness, craves affirmation and affection.",
+    Choleric:"Confident, decisive, action-oriented. Expresses love by leading and achieving goals together, craves respect and trust.",
+    Melancholy:"Thoughtful, loyal, detail-oriented. Shows love through meaningful words or actions, craves depth and consistency.",
+    Phlegmatic:"Calm, steady, peace-seeking. Shows love through presence and support, craves comfort and reliability.",
+    Supine:"Gentle, servant-hearted, quiet. Expresses love through service and faithfulness, craves being pursued and affirmed."
+  };
+
+  const bondingDesc = {
+    "Anchored Connector":"You feel secure in closeness and communicate openly about needs and conflicts.",
+    "Assurance Seeker":"You value frequent reassurance and closeness to feel safe and loved.",
+    "Steady Soul":"You are calm and independent but may need space before reconnecting after conflict.",
+    "Tender Protector":"You long for closeness but sometimes fear rejection or abandonment."
+  };
+
+  const intimacyDesc = {
+    Spiritual:"Shared faith and values form the foundation of your bond.",
+    Emotional:"You long to feel emotionally safe and deeply known.",
+    Intellectual:"You enjoy connecting through thoughtful conversations.",
+    Physical:"Being close through touch helps you feel safe and loved.",
+    Sexual:"Sexual intimacy expresses affection, passion, and closeness.",
+    Conflict:"You value staying connected even during disagreements.",
+    Partnership:"You thrive when responsibilities and decisions are shared.",
+    Affable:"Playfulness, kindness, and joy build your connection.",
+    Creative:"Creative activities and imagination inspire closeness.",
+    Financial:"Transparency with money strengthens trust and unity.",
+    Recreational:"Shared fun and activities bring energy to your bond.",
+    Commitment:"Loyalty and dedication provide security in the marriage."
+  };
+
+  let y = 100;
+  pdf.setTextColor("#000000");
+  pdf.setFont("helvetica", "bold");
+  pdf.setFontSize(18);
+  pdf.text("Your Results", 40, 60);
+
+  pdf.setFontSize(14);
+  pdf.text("Temperament in Affection", 40, y); y += 20;
+  pdf.setFont("helvetica", "normal");
+  [0,1].forEach(i=>{
+    const t = topTemp[i][0];
+    pdf.text(`• ${t}: ${temperamentDesc[t]}`, 50, y, { maxWidth: pageWidth - 80 });
+    y += 40;
+  });
+
+  pdf.setFont("helvetica", "bold");
+  pdf.text("Bonding Style", 40, y); y += 20;
+  pdf.setFont("helvetica", "normal");
+  pdf.text(`• ${topBond}: ${bondingDesc[topBond] || ""}`, 50, y, { maxWidth: pageWidth - 80 });
+  y += 60;
+
+  pdf.setFont("helvetica", "bold");
+  pdf.text("Top 3 Intimacy Needs", 40, y); y += 20;
+  pdf.setFont("helvetica", "normal");
+  topInt.slice(0,3).forEach(([type])=>{
+    pdf.text(`• ${type}: ${intimacyDesc[type]}`, 50, y, { maxWidth: pageWidth - 80 });
+    y += 40;
+  });
+
+  pdf.setFillColor(primaryBlue);
+  pdf.rect(0, pageHeight - 50, pageWidth, 50, "F");
+  pdf.setTextColor("#FFFFFF");
+  pdf.setFont("helvetica", "bold");
+  pdf.setFontSize(12);
+  pdf.text("HappyMarriageHappyLife.com  |  Helping Couples Build Lasting Love", pageWidth / 2, pageHeight - 20, { align: "center" });
+
   pdf.save("MarriageProfile.pdf");
 }
 </script>
+
 </body>
 </html>
