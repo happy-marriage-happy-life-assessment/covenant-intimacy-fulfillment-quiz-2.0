@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Best Combined Solution – Happy Marriage Happy Life</title>
+  <style>
+    body { font-family: Arial, sans-serif; background: #fff9f2; color: #1a3c5e; max-width: 900px; margin: auto; padding: 20px; }
+    h1, h2, h3 { text-align: center; }
+    .hidden { display: none; }
+    .card {
+      background: #ffffff;
+      border: 2px solid #4d9de0;
+      border-radius: 12px;
+      padding: 25px;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+      margin: 20px auto;
+      max-width: 700px;
+      text-align: center;
+    }
+    .btn {
+      display: inline-block;
+      margin: 10px 5px;
+      padding: 12px 20px;
+      background: #4d9de0;
+      color: white;
+      font-weight: bold;
+      font-size: 16px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+    .btn:hover { background: #3a7fbf; }
+    .answer-btn {
+      display: block;
+      width: 100%;
+      margin: 10px 0;
+      padding: 12px;
+      background: #4d9de0;
+      color: #fff;
+      font-size: 1rem;
+      font-weight: bold;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+    .answer-btn:hover { background: #3a7fbf; }
+    .progress { text-align: center; margin: 10px 0; font-weight: bold; }
+    .drag-container { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; }
+    .drag-item {
+      background: #f0f4f9;
+      border: 1px solid #4d9de0;
+      border-radius: 8px;
+      padding: 10px;
+      cursor: grab;
+      width: 40%;
+      text-align: center;
+    }
+    .slider-container { margin: 15px 0; }
+    .slider-container label { display: block; margin-bottom: 5px; }
+    .result-block {
+      background: #f0f4f9;
+      border-left: 6px solid #4d9de0;
+      padding: 15px;
+      margin: 15px 0;
+    }
+  </style>
+</head>
+<body>
+
+<!-- INTRO PAGE -->
+<div id="introPage" class="card">
+  <h1>Best Combined Solution</h1>
+  <p>Discover how you express and crave love, where you connect most, how safe you feel in closeness, and if your values align with your spouse.</p>
+  <button class="btn" onclick="startPart1()">Start Assessment</button>
+</div>
+
+<!-- PART 1 – TEMPERAMENT -->
+<div id="part1" class="card hidden">
+  <h2>Part 1: Temperament in Affection</h2>
+  <div class="progress" id="p1Progress"></div>
+  <div id="p1Question"></div>
+</div>
+
+<!-- PART 2 – DRAG AND DROP -->
+<div id="part2" class="card hidden">
+  <h2>Part 2: Rank Your Intimacy Needs</h2>
+  <p>Drag and rank each intimacy type from most important (top) to least important (bottom).</p>
+  <div class="drag-container" id="dragList"></div>
+  <button class="btn" onclick="finishPart2()">Next</button>
+</div>
+
+<!-- PART 3 – BONDING STYLE -->
+<div id="part3" class="card hidden">
+  <h2>Part 3: Bonding Style Check</h2>
+  <div class="progress" id="p3Progress"></div>
+  <div id="p3Question"></div>
+</div>
+
+<!-- PART 4 – VALUES ALIGNMENT -->
+<div id="part4" class="card hidden">
+  <h2>Part 4: Values Alignment Snapshot</h2>
+  <p>Use the sliders to rate how important each area is to you (0 = least, 10 = most important).</p>
+  <div id="valuesForm"></div>
+  <button class="btn" onclick="finishAssessment()">See My Results</button>
+</div>
+
+<!-- RESULTS -->
+<div id="results" class="card hidden">
+  <h2>Your Personalized Connection Profile</h2>
+  <div id="resultSummary"></div>
+</div>
+
+<script>
+/* ---------------- TEMPERAMENT QUESTIONS ---------------- */
+const temperamentQuestions = [
+  {q:"When your spouse is stressed, you naturally…",options:[
+    {text:"Crack a joke or make them laugh",temp:"Sanguine",int:"Affable"},
+    {text:"Take charge and fix things",temp:"Choleric",int:"Partnership"},
+    {text:"Offer thoughtful advice or solutions",temp:"Melancholy",int:"Intellectual"},
+    {text:"Sit close and listen quietly",temp:"Phlegmatic",int:"Emotional"},
+    {text:"Pray for them or serve quietly",temp:"Supine",int:"Spiritual"}
+  ]},
+  {q:"You feel most loved when your spouse…",options:[
+    {text:"Plans something fun together",temp:"Sanguine",int:"Recreational"},
+    {text:"Includes you in decisions",temp:"Choleric",int:"Commitment"},
+    {text:"Listens deeply and remembers details",temp:"Melancholy",int:"Emotional"},
+    {text:"Shows affection and spends calm time with you",temp:"Phlegmatic",int:"Physical"},
+    {text:"Pursues you gently and affirms you",temp:"Supine",int:"Spiritual"}
+  ]}
+];
+let p1Index=0,tempScores={Sanguine:0,Choleric:0,Melancholy:0,Phlegmatic:0,Supine:0};
+let intScores={};
+
+function startPart1(){ document.getElementById("introPage").classList.add("hidden"); showP1(); }
+function showP1(){
+  document.getElementById("part1").classList.remove("hidden");
+  document.getElementById("p1Progress").innerText=`Question ${p1Index+1} of ${temperamentQuestions.length}`;
+  const q=temperamentQuestions[p1Index];
+  let html=`<h3>${q.q}</h3>`;
+  q.options.forEach(o=>{
+    html+=`<button class="answer-btn" onclick="p1Answer('${o.temp}','${o.int}')">${o.text}</button>`;
+  });
+  document.getElementById("p1Question").innerHTML=html;
+}
+function p1Answer(temp,intimacy){
+  tempScores[temp]++;
+  intScores[intimacy]=(intScores[intimacy]||0)+1;
+  p1Index++;
+  if(p1Index<temperamentQuestions.length){ showP1(); }
+  else{ document.getElementById("part1").classList.add("hidden"); startPart2(); }
+}
+
+/* ---------------- DRAG AND DROP ---------------- */
+const intimacyTypes=["Spiritual","Emotional","Commitment","Intellectual","Affable","Conflict","Recreational","Partnership","Financial","Creative","Physical","Sexual"];
+function startPart2(){
+  document.getElementById("part2").classList.remove("hidden");
+  const list=document.getElementById("dragList");
+  intimacyTypes.forEach(t=>{
+    const div=document.createElement("div");
+    div.className="drag-item"; div.draggable=true; div.innerText=t;
+    div.addEventListener("dragstart",dragStart); div.addEventListener("dragover",dragOver);
+    div.addEventListener("drop",drop); list.appendChild(div);
+  });
+}
+let dragged;
+function dragStart(e){ dragged=this; }
+function dragOver(e){ e.preventDefault(); }
+function drop(e){ e.preventDefault(); if(this!==dragged){
+  let parent=this.parentNode;
+  let nodes=[...parent.children];
+  let draggedIndex=nodes.indexOf(dragged);
+  let targetIndex=nodes.indexOf(this);
+  if(draggedIndex<targetIndex) parent.insertBefore(dragged,this.nextSibling);
+  else parent.insertBefore(dragged,this);
+}}
+
+function finishPart2(){
+  document.getElementById("part2").classList.add("hidden");
+  startPart3();
+}
+
+/* ---------------- BONDING STYLE ---------------- */
+const bondingQuestions=[
+  {q:"When conflict happens, you usually…",options:[
+    {text:"Talk it out calmly",style:"Anchored Connector"},
+    {text:"Seek reassurance and closeness",style:"Assurance Seeker"},
+    {text:"Withdraw to think first",style:"Steady Soul"},
+    {text:"Feel unsure if you can trust or stay close",style:"Tender Protector"}
+  ]}
+];
+let p3Index=0,bondingCount={};
+function startPart3(){ showP3(); }
+function showP3(){
+  document.getElementById("part3").classList.remove("hidden");
+  document.getElementById("p3Progress").innerText=`Question ${p3Index+1} of ${bondingQuestions.length}`;
+  const q=bondingQuestions[p3Index];
+  let html=`<h3>${q.q}</h3>`;
+  q.options.forEach(o=>{
+    html+=`<button class="answer-btn" onclick="p3Answer('${o.style}')">${o.text}</button>`;
+  });
+  document.getElementById("p3Question").innerHTML=html;
+}
+function p3Answer(style){
+  bondingCount[style]=(bondingCount[style]||0)+1;
+  p3Index++;
+  if(p3Index<bondingQuestions.length){ showP3(); }
+  else{ document.getElementById("part3").classList.add("hidden"); startPart4(); }
+}
+
+/* ---------------- VALUES ALIGNMENT ---------------- */
+const values=["God","Family","Goals","Roles"];
+function startPart4(){
+  document.getElementById("part4").classList.remove("hidden");
+  const vf=document.getElementById("valuesForm");
+  values.forEach(v=>{
+    vf.innerHTML+=`<div class="slider-container"><label>${v}</label><input type="range" min="0" max="10" value="5" id="${v}Slider"/></div>`;
+  });
+}
+function finishAssessment(){
+  document.getElementById("part4").classList.add("hidden");
+  showResults();
+}
+
+/* ---------------- RESULTS ---------------- */
+function showResults(){
+  document.getElementById("results").classList.remove("hidden");
+  const topTemp=Object.entries(tempScores).sort((a,b)=>b[1]-a[1])[0][0];
+  const bonding=Object.entries(bondingCount).sort((a,b)=>b[1]-a[1])[0][0];
+  const ranked=[...document.querySelectorAll("#dragList .drag-item")].map(d=>d.innerText);
+
+  let html=`<div class="result-block"><strong>Temperament in Affection:</strong> ${topTemp}</div>`;
+  html+=`<div class="result-block"><strong>Your Bonding Style:</strong> ${bonding}</div>`;
+  html+=`<div class="result-block"><strong>Your Top 3 Intimacy Needs:</strong> ${ranked.slice(0,3).join(", ")}</div>`;
+  html+=`<div class="result-block"><strong>Values Importance:</strong><br/>`;
+  values.forEach(v=>{ html+=`${v}: ${document.getElementById(v+"Slider").value}/10<br/>`; });
+  html+=`</div>`;
+
+  document.getElementById("resultSummary").innerHTML=html;
+}
+</script>
+</body>
+</html>
