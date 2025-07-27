@@ -1,0 +1,1 @@
+Discover which of the 12 types of intimacy matter most—and least—to you. This quiz helps couples identify their unique intimacy needs, deepen their connection, and resolve conflict more effectively. Because intimacy is the ultimate spousal connection.
