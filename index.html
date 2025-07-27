@@ -71,9 +71,10 @@ const typeColors = {
   Partnership:"#D07E5F", Financial:"#7BC1D1", Creative:"#E085B2",
   Conflict:"#F67599", Physical:"#92C9D6", Sexual:"#E6A94C"
 };
-// ========================
-//   QUIZ QUESTIONS
-// ========================
+
+/* ============================
+   🔹 QUESTIONS ARRAY
+============================ */
 const questions = [
   {q:"When your spouse is stressed, you naturally…", opts:[
     {text:"Crack a joke or lighten the mood", t:"Sanguine", i:"Affable"},
@@ -258,6 +259,13 @@ const questions = [
 let index=0, tempScores={}, intimacyScores={}, bondingScores={};
 ["Sanguine","Choleric","Melancholy","Phlegmatic","Supine"].forEach(t=>tempScores[t]=0);
 
+function resetScores() {
+  tempScores = {Sanguine:0, Choleric:0, Melancholy:0, Phlegmatic:0, Supine:0};
+  intimacyScores = {};
+  Object.keys(intimacyDescriptions).forEach(k => intimacyScores[k] = 0);
+  bondingScores = {};
+}
+
 function getAffectionPreferences() {
   const highest = Object.entries(tempScores).sort((a,b)=>b[1]-a[1])[0][0];
   switch(highest){
@@ -287,6 +295,8 @@ function getBondingStyle() {
 document.getElementById("startQuizBtn").addEventListener("click", startQuiz);
 
 function startQuiz(){
+  resetScores();
+  index = 0;
   document.getElementById("introPage").classList.add("hidden");
   document.getElementById("quizPage").classList.remove("hidden");
   showQuestion();
@@ -344,8 +354,14 @@ function showResults(){
     <h3>Bonding Style</h3><p>${bonding}</p>`;
 
   const ctx=document.getElementById("intimacyChart");
-  new Chart(ctx,{type:"bar",data:{labels:sorted.map(([t])=>t),
-    datasets:[{label:"Scores",data:sorted.map(([_,s])=>s),backgroundColor:sorted.map(([t])=>typeColors[t])}] }});
+  if (Chart.getChart(ctx)) Chart.getChart(ctx).destroy(); // ✅ Prevent duplicate charts
+  new Chart(ctx,{
+    type:"bar",
+    data:{
+      labels:sorted.map(([t])=>t),
+      datasets:[{label:"Scores",data:sorted.map(([_,s])=>s),backgroundColor:sorted.map(([t])=>typeColors[t])}]
+    }
+  });
 }
 
 /* ============================
