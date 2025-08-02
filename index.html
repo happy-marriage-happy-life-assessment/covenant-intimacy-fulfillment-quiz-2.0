@@ -969,110 +969,57 @@ function validateAndSend() {
 }
 
 /* PDF Generation */
-function generatePDF(name) {
+async function generatePDF(name) {
   try {
-    if (!window.jspdf) {
-      throw new Error("jsPDF library not loaded.");
-    }
     const { jsPDF } = window.jspdf;
     const pdf = new jsPDF("p", "pt", "a4");
-    const marginX = 40;
-    const marginY = 40;
-    const pageWidth = pdf.internal.pageSize.getWidth();
-    const contentWidth = pageWidth - marginX * 2;
-
-    const userName = name || "Valued User";
     const resultsElement = document.getElementById("results");
-    if (!resultsElement) {
-      throw new Error("Results element not found.");
-    }
 
+    // Logo URL
     const logoUrl = "https://static.wixstatic.com/media/4d6372_c110ccf05896482192f466d6c0e3c1ae~mv2.png/v1/fill/w_476,h_194,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/Untitled-28_edited.png";
 
-    function addHeader(pageTitle) {
-      try {
-        pdf.addImage(logoUrl, "PNG", marginX, marginY, 180, 80);
-      } catch (e) {
-        console.warn("Logo failed to load, using placeholder text.");
-        pdf.setFont("helvetica", "bold");
-        pdf.setFontSize(14);
-        pdf.text("Happy Marriage Happy Life", marginX, marginY + 40);
-      }
-      pdf.setFont("helvetica", "bold");
-      pdf.setFontSize(18);
-      pdf.setTextColor(26, 60, 94);
-      pdf.text(pageTitle, pageWidth / 2, marginY + 110, { align: "center" });
+    // Load results content as canvas
+    const canvas = await html2canvas(resultsElement, { scale: 2 });
+    const imgData = canvas.toDataURL("image/png");
+
+    const imgProps = pdf.getImageProperties(imgData);
+    const pdfWidth = pdf.internal.pageSize.getWidth() - 40;
+    const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+
+    // Add logo at top of first page
+    try {
+      const logoImg = await fetch(logoUrl).then(res => res.blob()).then(blob => new Promise(resolve => {
+        const reader = new FileReader();
+        reader.onloadend = () => resolve(reader.result);
+        reader.readAsDataURL(blob);
+      }));
+      pdf.addImage(logoImg, "PNG", 30, 30, 150, 60);
+    } catch (e) {
+      console.warn("Logo failed to load.");
     }
 
-    const introText = Array.from(resultsElement.querySelectorAll(".intro-text")).map(el => el.innerText).join("\n\n") || "Your results are based on your unique responses.";
-    const affectionBlocks = Array.from(resultsElement.querySelectorAll("h3:nth-of-type(3) ~ .result-block")).slice(0, 2);
-    const intimacyBlocks = Array.from(resultsElement.querySelectorAll("h3:nth-of-type(5) ~ .result-block"));
-    const connectionBlock = resultsElement.querySelector("h3:nth-of-type(9) + .result-block")?.innerText || "Your connection patterns are unique.";
+    // Offset content below the logo
+    let position = 100;
+    let heightLeft = pdfHeight;
 
-    /* Page 1 */
-    addHeader("Your Personalized Connection Profile");
-    pdf.setFont("helvetica", "normal");
-    pdf.setFontSize(12);
-    pdf.setTextColor(0, 0, 0);
-    pdf.text(introText, marginX, marginY + 140, { maxWidth: contentWidth });
+    pdf.addImage(imgData, "PNG", 20, position, pdfWidth, pdfHeight);
+    heightLeft -= pdf.internal.pageSize.getHeight() - 40;
 
-    /* Page 2 */
-    pdf.addPage();
-    addHeader("Section 1: Affection Preferences");
-    let y = marginY + 150;
-    affectionBlocks.forEach(block => {
-      const color = block.style.borderLeftColor || "#4d9de0";
-      pdf.setFillColor(color);
-      pdf.rect(marginX, y, contentWidth, 60, "F");
-      pdf.setTextColor(255, 255, 255);
-      pdf.setFont("helvetica", "bold");
-      pdf.text(block.innerText.split("\n")[0], marginX + 10, y + 20);
-      pdf.setFont("helvetica", "normal");
-      pdf.setTextColor(0, 0, 0);
-      pdf.text(block.innerText.split("\n").slice(1).join("\n"), marginX + 10, y + 40, { maxWidth: contentWidth - 20 });
-      y += 100;
-    });
+    // Add remaining pages if needed
+    while (heightLeft > 0) {
+      position = heightLeft - pdfHeight + 20;
+      pdf.addPage();
+      pdf.addImage(imgData, "PNG", 20, position, pdfWidth, pdfHeight);
+      heightLeft -= pdf.internal.pageSize.getHeight() - 40;
+    }
 
-    /* Page 3 */
-    pdf.addPage();
-    addHeader("Section 2: Intimacy Type Profile");
-    y = marginY + 140;
-    intimacyBlocks.forEach(block => {
-      const color = block.style.borderLeftColor || "#4d9de0";
-      pdf.setFillColor(color);
-      pdf.rect(marginX, y, contentWidth, 80, "F");
-      pdf.setTextColor(255, 255, 255);
-      pdf.setFont("helvetica", "bold");
-      pdf.text(block.innerText.split("\n")[0], marginX + 10, y + 20);
-      pdf.setFont("helvetica", "normal");
-      pdf.setTextColor(0, 0, 0);
-      pdf.text(block.innerText.split("\n").slice(1).join("\n"), marginX + 10, y + 40, { maxWidth: contentWidth - 20 });
-      y += 120;
-      if (y > 700) { pdf.addPage(); y = marginY + 100; }
-    });
-
-    /* Page 4 */
-    pdf.addPage();
-    addHeader("Section 3: Connection Patterns");
-    pdf.setFont("helvetica", "normal");
-    pdf.setTextColor(0, 0, 0);
-    pdf.text(connectionBlock, marginX, marginY + 150, { maxWidth: contentWidth });
-
-    pdf.setFontSize(10);
-    pdf.setTextColor(160, 160, 160);
-    pdf.text(
-      "HappyMarriageHappyLife.com",
-      pageWidth / 2,
-      pdf.internal.pageSize.getHeight() - 20,
-      { align: "center" }
-    );
-
-    pdf.save(`Marriage_Connection_Profile_${userName.replace(/\s/g, "_")}.pdf`);
-  } catch (error) {
-    console.error("Error generating PDF:", error);
+    pdf.save(`Marriage_Connection_Profile_${name.replace(/\s/g, "_")}.pdf`);
+  } catch (err) {
+    console.error("PDF Generation Error:", err);
     alert("Failed to generate PDF. Please try again.");
   }
 }
+
 </script>
 </body>
 </html>
