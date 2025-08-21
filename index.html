@@ -2,6 +2,9 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8"/>
+<meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate, max-age=0"/>
+<meta http-equiv="Pragma" content="no-cache"/>
+<meta http-equiv="Expires" content="0"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Marriage Connection Assessment — Individual</title>
 <!-- Fonts -->
@@ -16,9 +19,9 @@
   .hidden{ display:none; }
   .progress-bar-container{ width:100%; max-width:520px; height:10px; background:#E0E0E0; border-radius:5px; margin:8px auto 4px; }
   .progress-bar{ height:100%; background:#FF4D4D; border-radius:5px; transition:width .25s; }
-  .muted{ color:#9aa3ab; text-align:center; margin-top:12px; }
-  .muted a:link, .muted a:visited { color:#9aa3ab; text-decoration:none; }
-  .muted a:hover { color:#9aa3ab; text-decoration:underline; }
+  .muted{ color:#9aa3ab; text-align:center; margin-top:12px; font-size:12px; }
+  .muted a{ color:#9aa3ab; text-decoration:none; }
+  .muted a:hover{ text-decoration:underline; }
 
   /* Utility */
   .lh-13 { line-height: 1.3; }
@@ -99,7 +102,10 @@
     <input id="yourName" class="input" placeholder="Your name" aria-label="Your name" style="border:1px solid #4D9DE0; border-radius:8px; padding:10px 12px; min-width:260px;">
   </div>
   <button id="startBtn" class="btn" style="max-width:260px;">Start Assessment</button>
-  <p class="muted"><a href="https://happymarriagehappylife.com" target="_blank" rel="noopener">HappyMarriageHappyLife.com</a></p>
+  <p class="muted">
+    <a href="https://happymarriagehappylife.com" target="_blank" rel="noopener">HappyMarriageHappyLife.com</a>
+    &nbsp;•&nbsp; <span id="buildBadgeIntro"></span>
+  </p>
 </div>
 
 <!-- Quiz -->
@@ -123,10 +129,23 @@
     <p>This is your personalized guide to understanding connection in a new way. Think of this not as a set of labels, but as a living map to the unique landscape of your relationship—it helps you name what’s true today and aim for what’s possible tomorrow.</p>
   </div>
   <div id="results"></div>
-  <p class="muted"><a href="https://happymarriagehappylife.com" target="_blank" rel="noopener">HappyMarriageHappyLife.com</a></p>
+  <p class="muted">
+    <a href="https://happymarriagehappylife.com" target="_blank" rel="noopener">HappyMarriageHappyLife.com</a>
+    &nbsp;•&nbsp; <span id="buildBadgeResults"></span>
+  </p>
 </div>
 
 <script>
+/* ===== Build marker to confirm new file loaded ===== */
+const BUILD = "individual-v3";
+console.log("Loaded build:", BUILD);
+document.addEventListener('DOMContentLoaded', () => {
+  const i = document.getElementById('buildBadgeIntro');
+  const r = document.getElementById('buildBadgeResults');
+  if(i) i.textContent = "Build: " + BUILD;
+  if(r) r.textContent = "Build: " + BUILD;
+});
+
 /* ================== Data ================== */
 const INTIMACY = {
   Spiritual:{label:"Spiritual Intimacy", desc:"Spiritual intimacy is the shared sense of purpose and connection to God’s design that anchors a relationship. It’s the core that shapes how love is experienced and expressed, guiding your journey together."},
@@ -167,7 +186,7 @@ const scripture = {
   thankYou: "“May the Lord make your love increase and overflow for each other and for everyone else, just as ours does for you.” — 1 Thessalonians 3:12"
 };
 
-/* Temperament accents (Sanguine/Choleric/Melancholy/Phlegmatic/Supine) */
+/* Temperament accents */
 function temperamentAccentFromKey(k){
   const map = {
     E: { color: typeColors.Emotional,    bg: typeOpac.Emotional    },
@@ -183,7 +202,7 @@ function temperamentAccentFromAffKey(k){
   return temperamentAccentFromKey(t);
 }
 
-/* Rich copy for Compassion & Care */
+/* Compassion & Care copy */
 const affEXP = {
   Playful: "You naturally lift the mood with humor, lightness, and spontaneous moments that say, “I’m with you.” You turn ordinary spaces into warm, safe places.",
   Initiative: "You show love by stepping in and taking pressure off—solving problems, removing obstacles, and protecting what matters.",
@@ -250,7 +269,7 @@ const patternDetail = {
   }
 };
 
-/* Personalized self-repair tips by pattern */
+/* Self repair tips by pattern */
 const selfTips = {
   SteadyConnector: [
     "Set a five-minute evening check-in: one feeling, one need, one next step.",
@@ -433,46 +452,6 @@ function refreshRankList(ul){
     downBtn.onclick = ()=>{ const i=answers.rank.indexOf(k); if(i<answers.rank.length-1){ [answers.rank[i+1],answers.rank[i]]=[answers.rank[i],answers.rank[i+1]]; refreshRankList(ul);} };
     ul.appendChild(li);
   });
-}
-
-/* Pick-2 */
-const affectionOptions = [
-  {key:"Playful", text:"Playful moments and upbeat encouragement"},
-  {key:"Initiative", text:"Taking initiative—removing stressors"},
-  {key:"DeepTalk", text:"Deep conversation and focused time"},
-  {key:"Warmth", text:"Warm presence and gentle touch"},
-  {key:"Support", text:"Practical help and steady teamwork"}
-];
-function renderPick2(root, title, field){
-  const selected = answers[field];
-  const div = document.createElement('div');
-  div.innerHTML = `<h3 style="text-align:center;">${title}</h3>
-    <p class="rank-help">Tap to select two. Your first tap is #1, second is #2. Tap again to unselect.</p>
-    <div id="pick2Wrap" style="text-align:center;"></div>
-    <p style="text-align:center; margin-top:8px;">Selected: <strong>${selected.map((k,i)=>`${i+1}. ${labelFor(k)}`).join("  ")||"—"}</strong></p>`;
-  root.appendChild(div);
-  const wrap = div.querySelector('#pick2Wrap');
-  affectionOptions.forEach(o=>{
-    const pill = document.createElement('span');
-    pill.className = 'pill' + (selected.includes(o.key) ? ' selected' : '');
-    pill.textContent = o.text;
-    pill.onclick = ()=>{
-      if(selected.includes(o.key)){
-        answers[field] = selected.filter(x=>x!==o.key);
-        renderStep();
-      }else{
-        if(selected.length<2){
-          answers[field] = [...selected, o.key];
-          if(answers[field].length===2) return next();
-          renderStep();
-        }
-      }
-    };
-    wrap.appendChild(pill);
-  });
-}
-function labelFor(k){
-  return {Playful:"Playful moments", Initiative:"Taking initiative", DeepTalk:"Deep conversation", Warmth:"Warm presence & touch", Support:"Practical support"}[k]||k;
 }
 
 /* Single-choice helper */
