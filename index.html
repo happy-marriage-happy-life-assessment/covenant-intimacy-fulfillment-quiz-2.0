@@ -3,8 +3,9 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Marriage Connection Assessment — Single Partner</title>
-<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@500&family=Open+Sans:wght@600;700&family=Merriweather:ital,wght@1,400;1,700&family=Pacifico&display=swap" rel="stylesheet">
+<title>Marriage Connection Assessment — Individual</title>
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@500&family=Open+Sans:wght@600;700&family=Merriweather:ital,wght@1,400;1,700&family=Great+Vibes&display=swap" rel="stylesheet">
 <style>
   body { font-family: Arial, sans-serif; background:#FFF9F2; color:#1A3C5E; max-width: 980px; margin:auto; padding:20px; box-sizing:border-box; }
   h1,h2,h3,h4{ text-align:center; line-height:1.25; }
@@ -19,7 +20,7 @@
   .muted a:link, .muted a:visited { color:#9aa3ab; text-decoration:none; }
   .muted a:hover { color:#9aa3ab; text-decoration:underline; }
 
-  /* Utility tweaks */
+  /* Utility */
   .lh-13 { line-height: 1.3; }
   .mt-24pt { margin-top: 24pt !important; }
 
@@ -39,14 +40,14 @@
   .rank-actions button { padding:6px 10px; font-size:.9rem; border-radius:6px; border:1px solid #4D9DE0; background:#fff; color:#1A3C5E; cursor:pointer; }
   .rank-actions button:hover{ background:#f0f6ff; }
 
-  /* Q buttons & pills */
+  /* Question UI */
   .question-box { background:#fff; border:1px solid #4D9DE0; border-radius:8px; padding:16px; margin:14px auto; max-width:760px; }
   .vertical-list .answer-btn{ margin:8px auto; max-width:760px; }
   .pill { display:inline-block; padding:8px 12px; border-radius:999px; border:1px solid #d0d7de; margin:6px; cursor:pointer; }
   .pill.selected{ background:#3A7FBF; border-color:#3A7FBF; color:#fff; }
 
   /* Results */
-  .result-block { margin-bottom:16px; page-break-inside:avoid; padding:16px; border-left:8px solid #4D9DE0; border-radius:8px; background:#fff; }
+  .result-block { margin-bottom:16px; page-break-inside:avoid; padding:16px; border-left:8px solid #4D9DE0; border-radius:8px; background:#fff; line-height:1.3; }
   .section-title { color:#1A3C5E; font-family:'Open Sans',sans-serif; font-weight:700; font-size:16pt; margin-bottom:10px; }
   .subsection-title { color:#1A3C5E; font-family:'Roboto',sans-serif; font-weight:600; font-size:14pt; margin: 15px 0 8px; text-align:center; }
   .section-divider{ height:1pt; background-color:#FF4D4D; width:100%; max-width:860px; margin:24pt auto; }
@@ -58,28 +59,24 @@
   .results-list{ list-style-position:outside; margin-left:20px; text-align:left; }
   .results-list li{ margin-bottom:6px; }
 
-  /* Discussion Prompts highlight = light blue */
   .prompt-block {
     border-left:8px solid #4D9DE0;
     background: rgba(77,157,224,0.08);
     border-radius:8px; padding:16px; margin:16px 0;
   }
 
-  .partner-subhead{ text-align:center; margin:6px 0 6px; }
-
-  /* Friendly Thank You title centered in Pacifico */
+  /* Thank You */
   .thank-title{
     margin-top:0;
-    font-family:'Pacifico', cursive;
+    margin-bottom:12pt;
+    font-family:'Savoye LET','Zapfino','Great Vibes',cursive;
     color:#4D9DE0;
-    font-size:2.2rem; /* larger, warm & friendly */
-    line-height:1.2;
+    font-size:4.4rem;
+    line-height:1.1;
     text-align:center;
   }
-
-  @media (max-width:700px){
-    .rank-wrap, .question-box { padding:14px; }
-  }
+  @media (max-width:700px){ .thank-title{ font-size:3.2rem; } }
+  @media (max-width:420px){ .thank-title{ font-size:2.6rem; } }
 </style>
 </head>
 <body>
@@ -90,8 +87,8 @@
   <h1>Your Guide to a Deeper Connection</h1>
   <div class="intro-text">
     <p style="text-align:center;"><em>Ready for a few “aha!” moments?</em></p>
-    <p>This is a moment for you to reflect on what builds intimacy and how you navigate daily life.</p>
-    <p>When you’re done, you’ll see a personalized profile with insights and practical ideas you can put to work right away.</p>
+    <p>This is a moment to reflect on what builds intimacy and how you navigate daily life.</p>
+    <p>When you’re done, you’ll see a personalized profile with practical ideas you can put to work right away.</p>
 
     <p style="margin-bottom:0.2em;"><strong>How it works:</strong></p>
     <div class="lh-13" style="margin-top:0;">
@@ -132,18 +129,18 @@
 <script>
 /* ================== Data ================== */
 const INTIMACY = {
-  Spiritual:{label:"Spiritual Intimacy", desc:"Anchors the relationship in God’s design and purpose. It governs how love is defined and lived out."},
-  Emotional:{label:"Emotional Intimacy", desc:"Enables vulnerability, empathy, and emotional safety. It opens the door to all other forms of closeness."},
-  Commitment:{label:"Commitment Intimacy", desc:"The covenant glue. It provides the security needed to face challenges and grow deeper in all other areas."},
-  Intellectual:{label:"Intellectual Intimacy", desc:"Connecting through thoughts, values, and deep conversations."},
-  Affable:{label:"Affable Intimacy", desc:"Agreeable, easy going, peaceful, social, and ease in your interactions."},
-  Conflict:{label:"Conflict Intimacy", desc:"Staying connected in disagreement."},
-  Recreational:{label:"Recreational Intimacy", desc:"Laughter, playfulness, enjoying life and shared experiences together."},
-  Partnership:{label:"Partnership Intimacy", desc:"Managing responsibilities and making decisions together."},
-  Stability:{label:"Financial Intimacy (Stability)", desc:"Transparent, honest, and value-aligned management of resources like time and money, fostering trust and stability."},
-  Creative:{label:"Creative Intimacy", desc:"Dreaming, building, or creating things together."},
-  Physical:{label:"Physical Intimacy", desc:"Touch, presence, comfort, and non-sexual affection."},
-  Sexual:{label:"Sexual Intimacy", desc:"Passionate, exclusive, and sacred physical union."}
+  Spiritual:{label:"Spiritual Intimacy", desc:"Spiritual intimacy is the shared sense of purpose and connection to God’s design that anchors a relationship. It’s the core that shapes how love is experienced and expressed, guiding your journey together."},
+  Emotional:{label:"Emotional Intimacy", desc:"Emotional intimacy is the key to deep connection, creating a safe space for vulnerability and empathy. This crucial bond is the gateway that allows all other forms of closeness to flourish."},
+  Commitment:{label:"Commitment Intimacy", desc:"Commitment intimacy is the security and dedication that acts as the core of a relationship, providing the stability needed to weather life’s storms. This dedicated bond is what allows a couple to face challenges and deepen their connection over time."},
+  Intellectual:{label:"Intellectual Intimacy", desc:"Intellectual intimacy is about sharing a mental and emotional connection through engaging conversations and mutual respect for each other’s thoughts and values. It builds a powerful bond forged by the exchange of ideas and the exploration of new perspectives."},
+  Affable:{label:"Affable Intimacy", desc:"Affable intimacy is the ease and comfort found in a relationship, creating a peaceful and enjoyable environment. It’s the simple joy of being agreeable and easygoing in your daily interactions with each other."},
+  Conflict:{label:"Conflict Intimacy", desc:"Conflict intimacy is the ability to maintain a strong connection and mutual respect even during disagreements. It allows couples to navigate differences and grow closer through the process of resolving conflicts together."},
+  Recreational:{label:"Recreational Intimacy", desc:"Recreational intimacy is about sharing laughter, playfulness, and joy through shared hobbies and experiences. It brings vitality and fun to a relationship, creating cherished memories that strengthen the bond."},
+  Partnership:{label:"Partnership Intimacy", desc:"Partnership intimacy is the collaborative connection built by working together to manage daily responsibilities and make decisions. This forges a powerful bond as a couple functions as a unified team, tackling life’s challenges side by side."},
+  Stability:{label:"Financial Intimacy (Stability)", desc:"Stability intimacy is about transparently and honestly managing resources like time and money together, building a foundation of trust and a secure future. It’s a shared commitment to aligning your values as you work toward a common goal."},
+  Creative:{label:"Creative Intimacy", desc:"Creative intimacy is the shared joy of bringing new ideas to life by building and dreaming together. This bond is strengthened through the process of collaborating on projects and seeing your shared vision become a reality."},
+  Physical:{label:"Physical Intimacy", desc:"Physical intimacy involves connecting through non-sexual touch, comfort, and physical presence. This kind of closeness creates a sense of safety and security, affirming your bond through simple gestures and shared moments."},
+  Sexual:{label:"Sexual Intimacy", desc:"Sexual intimacy is a passionate, exclusive, and sacred physical union that expresses a deep, committed connection. It’s a unique and powerful way to honor your bond through a shared experience of vulnerability and pleasure."}
 };
 const TYPES = Object.keys(INTIMACY);
 
@@ -161,10 +158,6 @@ const typeOpac = {
 };
 
 const scripture = {
-  coreStrengths: "“Above all, love each other deeply, because love covers over a multitude of sins.” — 1 Peter 4:8",
-  areasForGrowth: "“Let us consider how we may spur one another on toward love and good deeds.” — Hebrews 10:24",
-  untappedOpps: "“See, I am doing a new thing! … Do you not perceive it?” — Isaiah 43:19",
-
   compassionCare: "“Be completely humble and gentle; be patient, bearing with one another in love.” — Ephesians 4:2",
   socialEngagement: "“Therefore encourage one another and build each other up.” — 1 Thessalonians 5:11",
   decisionLeadership: "“If any of you lacks wisdom, you should ask God … and it will be given to you.” — James 1:5",
@@ -177,21 +170,20 @@ const scripture = {
 /* Temperament accents (Sanguine/Choleric/Melancholy/Phlegmatic/Supine) */
 function temperamentAccentFromKey(k){
   const map = {
-    E: { color: typeColors.Emotional,    bg: typeOpac.Emotional    }, // Sanguine
-    S: { color: typeColors.Commitment,   bg: typeOpac.Commitment   }, // Choleric
-    R: { color: typeColors.Intellectual, bg: typeOpac.Intellectual }, // Melancholy
-    A: { color: typeColors.Affable,      bg: typeOpac.Affable      }, // Phlegmatic
-    U: { color: typeColors.Partnership,  bg: typeOpac.Partnership  }  // Supine
+    E: { color: typeColors.Emotional,    bg: typeOpac.Emotional    },
+    S: { color: typeColors.Commitment,   bg: typeOpac.Commitment   },
+    R: { color: typeColors.Intellectual, bg: typeOpac.Intellectual },
+    A: { color: typeColors.Affable,      bg: typeOpac.Affable      },
+    U: { color: typeColors.Partnership,  bg: typeOpac.Partnership  }
   };
   return map[k] || { color:"#4D9DE0", bg:"rgba(77,157,224,.08)" };
 }
 function temperamentAccentFromAffKey(k){
-  // Playful→E, Initiative→S, DeepTalk→R, Warmth→A, Support→U
   const t = { Playful:"E", Initiative:"S", DeepTalk:"R", Warmth:"A", Support:"U" }[k];
   return temperamentAccentFromKey(t);
 }
 
-/* Rich copy for Compassion & Care (expressed/desired) */
+/* Rich copy for Compassion & Care */
 const affEXP = {
   Playful: "You naturally lift the mood with humor, lightness, and spontaneous moments that say, “I’m with you.” You turn ordinary spaces into warm, safe places.",
   Initiative: "You show love by stepping in and taking pressure off—solving problems, removing obstacles, and protecting what matters.",
@@ -200,7 +192,7 @@ const affEXP = {
   Support: "You love through action: pitching in, following through, and sharing the load. Your reliability says, “You’re not alone—I'm with you.”"
 };
 const affDES = {
-  Playful: "You feel loved when your spouse keeps things light, playful, and hope-filled—like a breath of fresh air when life feels heavy.",
+  Playful: "You feel loved when things are kept light, playful, and hope-filled—like a breath of fresh air when life feels heavy.",
   Initiative: "You feel most cared for when your spouse takes initiative—removing stress, solving a problem, or leading with strength and protection.",
   DeepTalk: "You feel cherished when your spouse slows down, listens deeply, and engages your thoughts and heart with focused, meaningful time.",
   Warmth: "You feel secure with gentle presence, unhurried attention, and comforting touch that says, “I’m here, and you matter.”",
@@ -211,7 +203,7 @@ const affDES = {
 const temperamentDetails = {
   E: { looks:"You energize the room and move things forward with enthusiasm.",
        watch:"Fast pace can out-run deeper needs or quieter voices.",
-       tip:"Plan both lively connection and quiet check-ins to stay balanced." },
+       tip:"Schedule both lively connection and quiet check-ins to stay balanced." },
   S: { looks:"You provide direction, set goals, and protect progress.",
        watch:"Decisiveness can feel controlling if not co-authored.",
        tip:"Invite input early and name where you’re flexible." },
@@ -226,19 +218,60 @@ const temperamentDetails = {
        tip:"Voice one specific need and one boundary you appreciate." }
 };
 
-/* R&R extras */
-function rrExtra(label){
-  if(label==="Strong")   return "You generally feel honored and seen—keep naming specific appreciations to reinforce that culture.";
-  if(label==="Moderate") return "You’re often valued, but clarity helps. Agree on simple ways to say “I see you” each week.";
-  return "Name the kinds of affirmation that matter and invite a daily “one sentence appreciation” for a week.";
-}
+/* Connection Pattern details */
+const patternDetail = {
+  SteadyConnector: {
+    connectionType: "Harmony-focused and steady—your presence calms the room and keeps connection safe.",
+    strengths: "create a peaceful space where hard conversations feel possible. You’re consistent, fair, and great at lowering tension.",
+    challenges: "can move past issues too quickly or downplay your own needs to keep the peace, which can leave things unresolved.",
+    tendencies: "In conflict, you often smooth things over fast and avoid going deep, hoping the calm will hold.",
+    coping: "Try a 5–10 minute daily check-in. Name one feeling and one specific need before you move to solutions."
+  },
+  ReassuranceSeeker: {
+    connectionType: "Attachment-aware and passionate—you lead with heart and crave clarity when things feel off.",
+    strengths: "fight for closeness and speak up when something feels wrong. You’re empathetic and quick to repair.",
+    challenges: "needing reassurance now can feel intense and escalate emotions if it doesn’t arrive quickly.",
+    tendencies: "In conflict, you pursue answers and closeness immediately, which can feel like pressure to a withdrawing partner.",
+    coping: "Ask for one clear reassurance, breathe together, then agree to a short reset with a promised return time."
+  },
+  IndependentConnector: {
+    connectionType: "Thoughtful and composed—you value clarity and reflection to keep connection honest and stable.",
+    strengths: "think before you speak, de-escalate well, and protect against saying things you don’t mean.",
+    challenges: "taking space without clarity can feel like distance or shutdown to your spouse.",
+    tendencies: "In conflict, you step back to think. Without a return time, that pause can be heard as disconnection.",
+    coping: "Request space with a specific return time (e.g., 30 minutes). Offer one sentence of reassurance first."
+  },
+  GuardedConnector: {
+    connectionType: "Careful and loyal—you open slowly and build trust through consistency.",
+    strengths: "are dependable and don’t overreact. When you commit, you show up.",
+    challenges: "caution can look like walls. It’s easy to assume negative intent and protect rather than share.",
+    tendencies: "In conflict, you may go quiet, assume the worst, or agree just to end it—then carry the weight alone.",
+    coping: "Use micro-trust steps: keep one small promise daily, write a short note before hard talks, and name one safe topic to open."
+  }
+};
 
-/* Connection pattern extras */
-const patternExtras = {
-  SteadyConnector: "Use a short daily “check-in” ritual so small tensions resolve early.",
-  ReassuranceSeeker: "Agree on a quick reassurance phrase, then pause to prevent spirals.",
-  IndependentConnector: "Set a clear “return time” after space so distance doesn’t become disconnection.",
-  GuardedConnector: "Start with micro-trust gestures (small keeps) before heavy talk."
+/* Personalized self-repair tips by pattern */
+const selfTips = {
+  SteadyConnector: [
+    "Set a five-minute evening check-in: one feeling, one need, one next step.",
+    "When tempted to smooth over, ask yourself: “What do I really need to say?”",
+    "Close loops—agree on the next check-in time before ending tough talks."
+  ],
+  ReassuranceSeeker: [
+    "Ask for one clear reassurance, then take 5–10 calming breaths.",
+    "If you’re spiraling, request a 10-minute reset with a promised return time.",
+    "Use “I feel… I need…” instead of explanations or accusations."
+  ],
+  IndependentConnector: [
+    "Before taking space, reassure with one sentence, then set a clear return time.",
+    "Use a notepad to capture your main point so you don’t avoid the talk.",
+    "Come back with one concrete request and one compromise."
+  ],
+  GuardedConnector: [
+    "Do one daily micro-trust act (keep one small promise).",
+    "Name one safe topic and share a little more than you’re used to.",
+    "Use a short written note to begin hard conversations kindly."
+  ]
 };
 
 /* ================== Flow/State ================== */
@@ -456,9 +489,8 @@ function renderSingleList(root, title, options, onPick){
 }
 function next(){ step++; (step<TOTAL_STEPS)? renderStep() : finalize(); }
 
-/* Finalize & Results */
+/* Finalize → Results */
 function finalize(){
-  // Social/Decision tops + summaries
   const socialCounts = {E:0,S:0,R:0,A:0,U:0}; Object.values(answers.social).forEach(k=> socialCounts[k]++);
   const decisionCounts = {E:0,S:0,R:0,A:0,U:0}; Object.values(answers.decision).forEach(k=> decisionCounts[k]++);
   const socialTop = Object.entries(socialCounts).sort((a,b)=>b[1]-a[1])[0]?.[0] || null;
@@ -480,11 +512,9 @@ function finalize(){
     U:"You steadily support plans and shared goals."
   })[decisionTop] : "You adapt flexibly to different situations.";
 
-  // R&R
   const rrScore = (answers.rr.rr1 ?? 0) + (answers.rr.rr2 ?? 0);
   const rrLabel = rrScore>=5 ? "Strong" : rrScore>=3 ? "Moderate" : "Needs Attention";
 
-  // Bonding
   const bondCounts = {SteadyConnector:0, ReassuranceSeeker:0, IndependentConnector:0, GuardedConnector:0};
   Object.values(answers.bond).forEach(k=> bondCounts[k]++);
   const bondingKey = Object.entries(bondCounts).sort((a,b)=>b[1]-a[1])[0]?.[0] || "SteadyConnector";
@@ -515,14 +545,14 @@ function renderResults(p){
     <div class="section-divider"></div>
     <h3 class="section-title">Section 1: Your Intimacy Preferences</h3>
     <div class="intro-text">
-      This section is all about understanding intimacy—the profound experience of being truly known, deeply connected, and fully cherished by your spouse. It reveals your unique connection profile, showing how you naturally express love and how you feel most loved in return.
-      <p>Our model organizes intimacy into 12 distinct types that span all dimensions of human experience, wisely combining the essential aspects of 'being together' (like emotional bonding and spiritual connection) and 'doing together' (like shared effort and practical unity). This approach reflects how love truly thrives in real-life marriage. These types represent crucial points of connection (and sometimes conflict), and understanding your preferences gives you a shared language to express needs and navigate connection.</p>
+      This section is about understanding intimacy—the profound experience of being truly known, deeply connected, and fully cherished. It reveals your unique profile, showing how you naturally express love and how you feel most loved in return.
+      <p>Our model organizes intimacy into 12 types across human experience, combining the essential aspects of <em>“being together”</em> (like emotional bonding and spiritual connection) and <em>“doing together”</em> (like shared effort and practical unity). Think of these as a helpful map for your next steps.</p>
     </div>
 
     <div class="subsection-divider"></div>
     <h4 class="subsection-title">Your Core Connection Strengths</h4>
-    <div class="verse">${scripture.coreStrengths}</div>
-    <p class="intro-text">Based on your unique profile, these are your most fulfilling and effortless pathways to deeper closeness. They highlight your natural strengths and the incredible ways you genuinely thrive.</p>
+    <div class="verse">“Above all, love each other deeply, because love covers over a multitude of sins.” — 1 Peter 4:8</div>
+    <p class="intro-text">These are your most fulfilling and effortless pathways to deeper closeness.</p>
     ${typesColumn(p.name, p.coreTypes)}
 
     ${promptsBlock([
@@ -533,8 +563,8 @@ function renderResults(p){
 
     <div class="subsection-divider"></div>
     <h4 class="subsection-title">Your Areas for Growth</h4>
-    <div class="verse">${scripture.areasForGrowth}</div>
-    <p class="intro-text">You'll find these areas are wonderful opportunities for intentional focus. With a bit of practice and presence, you can deepen connection here.</p>
+    <div class="verse">“Let us consider how we may spur one another on toward love and good deeds.” — Hebrews 10:24</div>
+    <p class="intro-text">These are wonderful opportunities for intentional focus. With a bit of practice and presence, you can deepen connection here.</p>
     ${typesColumn(p.name, p.growthTypes)}
 
     ${promptsBlock([
@@ -544,8 +574,8 @@ function renderResults(p){
 
     <div class="subsection-divider"></div>
     <h4 class="subsection-title">Your Untapped Opportunities</h4>
-    <div class="verse">${scripture.untappedOpps}</div>
-    <p class="intro-text">These aren't weaknesses at all—think of them as exciting, untapped gifts to discover. Exploring them can add surprising depth and joy.</p>
+    <div class="verse">“See, I am doing a new thing! … Do you not perceive it?” — Isaiah 43:19</div>
+    <p class="intro-text">These aren’t weaknesses—think of them as exciting, untapped gifts to discover. Exploring them can add surprising depth and joy.</p>
     ${typesColumn(p.name, p.untappedTypes)}
 
     ${promptsBlock([
@@ -560,13 +590,13 @@ function renderResults(p){
     <div class="section-divider"></div>
     <h3 class="section-title">Section 2: Relational Dynamics</h3>
     <div class="intro-text">
-      Your relationship isn’t just a connection—it’s a unique dance of two beautiful, distinct individuals! This section clarifies the everyday rhythms that shape your connection.
+      These everyday rhythms shape your connection—how you care, engage socially, share influence, and honor one another.
     </div>
 
     <div class="subsection-divider"></div>
     <h4 class="subsection-title">Compassion & Care</h4>
     <div class="verse">${scripture.compassionCare}</div>
-    <p class="intro-text">How love, empathy, and emotional needs are expressed and received. This is where you answer, “Do you care about me?”—both in how you show up and how you long to be comforted.</p>
+    <p class="intro-text">How love, empathy, and emotional needs are expressed and received—your answer to <em>“Do you care about me?”</em></p>
     ${compassionColumn(p)}
 
     <div class="subsection-divider"></div>
@@ -590,7 +620,7 @@ function renderResults(p){
     <div class="section-divider"></div>
     <h3 class="section-title">Section 3: Connection Patterns</h3>
     <div class="verse">${scripture.connectionPattern}</div>
-    <p class="intro-text">Everyone has a unique pattern for how they approach connection and conflict. These results show how you tend to respond to perceived conflict and how you desire to repair afterward. Learning your strengths, challenges, and blind spots here is key to a healthier, more resilient relationship.</p>
+    <p class="intro-text">These results show how you tend to respond to perceived conflict and how you prefer to repair. Learning your strengths, challenges, and blind spots here is key to a healthier, more resilient relationship.</p>
     ${patternColumn(p)}
 
     <div class="subsection-divider"></div>
@@ -601,8 +631,8 @@ function renderResults(p){
     <div class="result-block" style="border-left-color:transparent; background:#fff;">
       <h3 class="thank-title">Thank You</h3>
       <div class="verse">${scripture.thankYou}</div>
-      <p class="intro-text">We hope you had fun discovering your unique connection patterns. Use these insights as a friendly guide—not labels—to spark great conversations and small, consistent changes.</p>
-      <p class="intro-text">To be truly known is to unlock the deepest intimacy—embrace what's true today and aim courageously for what's possible tomorrow.</p>
+      <p class="intro-text">We hope you enjoyed discovering your unique connection patterns. Use these insights as a friendly guide—not labels—to spark great conversations and small, consistent changes.</p>
+      <p class="intro-text">To be truly known is to unlock the deepest intimacy—embrace what’s true today and aim courageously for what’s possible tomorrow.</p>
     </div>
   `;
 
@@ -649,11 +679,10 @@ function compassionColumn(p){
 }
 
 function buildTemperamentText(topKey, summary){
-  if(!topKey) return summary;
+  if(!topKey) return summary || "";
   const d = temperamentDetails[topKey] || {};
-  return `${summary} <br><em>What it looks like:</em> ${d.looks || ""} <br><em>Watch-outs:</em> ${d.watch || ""} <br><em>Helpful tip:</em> ${d.tip || ""}`;
+  return `${summary || ""} <br><em>What it looks like:</em> ${d.looks || ""} <br><em>Watch-outs:</em> ${d.watch || ""} <br><em>Helpful tip:</em> ${d.tip || ""}`;
 }
-
 function temperamentBlock(name, title, text, topKey){
   const acc = temperamentAccentFromKey(topKey);
   return `
@@ -663,75 +692,31 @@ function temperamentBlock(name, title, text, topKey){
   `;
 }
 
-function rrAccent(label){
-  if(label==="Strong")   return { color:typeColors.Partnership, bg:typeOpac.Partnership };  // green
-  if(label==="Moderate") return { color:typeColors.Commitment,  bg:typeOpac.Commitment  }; // yellow
-  return { color:typeColors.Emotional, bg:typeOpac.Emotional };                              // red
-}
-function rrCard(p){
-  const acc = rrAccent(p.rrLabel);
-  return `
-    <div class="result-block" style="border-left-color:${acc.color}; background:${acc.bg};">
-      <strong>${p.name} — Respect &amp; Recognition:</strong> ${p.rrLabel} (${p.rrScore}/6)
-      <p style="margin:8px 0 0;">${rrStatement(p.rrScore)}</p>
-      <p style="margin:4px 0 0;"><em>${rrExtra(p.rrLabel)}</em></p>
-    </div>
-  `;
-}
-
 function patternColumn(p){
   const map = {
-    SteadyConnector:{ color: typeColors.Partnership,  bg: typeOpac.Partnership,
-      label:"Steady Connector", desc:"You create a safe space for open communication.",
-      challenges:"You may assume quick talks fix everything.", style:"Seeks harmony; may avoid depth." },
-    ReassuranceSeeker:{ color: typeColors.Emotional, bg: typeOpac.Emotional,
-      label:"Reassurance Seeker", desc:"You thrive on frequent affirmations.",
-      challenges:"Validation needs may overwhelm others.", style:"May over-pursue reassurance." },
-    IndependentConnector:{ color: typeColors.Intellectual, bg: typeOpac.Intellectual,
-      label:"Independent Connector", desc:"Calm, steady presence; values space.",
-      challenges:"Space can feel like distance.", style:"May withdraw or shut down." },
-    GuardedConnector:{ color: typeColors.Conflict,   bg: typeOpac.Conflict,
-      label:"Guarded Connector", desc:"Builds trust gradually; dependable.",
-      challenges:"Caution can slow openness.", style:"May assume negative intent." }
+    SteadyConnector:{ color: typeColors.Partnership,  bg: typeOpac.Partnership },
+    ReassuranceSeeker:{ color: typeColors.Emotional, bg: typeOpac.Emotional },
+    IndependentConnector:{ color: typeColors.Intellectual, bg: typeOpac.Intellectual },
+    GuardedConnector:{ color: typeColors.Conflict,   bg: typeOpac.Conflict }
   };
-  const info = map[p.bondingKey] || map.SteadyConnector;
+  const acc = map[p.bondingKey] || { color:"#4D9DE0", bg:"rgba(77,157,224,.08)" };
+  const d = patternDetail[p.bondingKey];
   return `
     <div class="partner-card"><div class="partner-inner">
       <div class="partner-header">${p.name}</div>
-      <div class="result-block" style="border-left-color:${info.color}; background:${info.bg};">
-        <strong>${info.label}</strong>
-        <p><strong>Strengths:</strong> ${info.desc}</p>
-        <p><strong>Challenges:</strong> ${info.challenges}</p>
-        <p><strong>Typical in Tension:</strong> ${info.style}</p>
-        <p style="margin:6px 0 0;"><em>What helps:</em> ${patternExtras[p.bondingKey]}</p>
+      <div class="result-block" style="border-left-color:${acc.color}; background:${acc.bg};">
+        <p><strong>Connection Type:</strong> ${d.connectionType}</p>
+        <p><strong>Strengths:</strong> You ${d.strengths}</p>
+        <p><strong>Challenges:</strong> You ${d.challenges}</p>
+        <p><strong>Tendencies in Conflict:</strong> ${d.tendencies}</p>
+        <p><strong>Coping Skills:</strong> ${d.coping}</p>
       </div>
     </div></div>
   `;
 }
 
 function strategySelfCard(bondingKey){
-  const tips = {
-    SteadyConnector: [
-      "Schedule a 10-minute daily “check-in” to clear small tensions.",
-      "When emotions rise, name one feeling + one need (keep it short).",
-      "Close loops: agree on a next step before ending tough talks."
-    ],
-    ReassuranceSeeker: [
-      "Ask for a specific reassurance (one sentence)—then breathe and pause.",
-      "Use “I feel… I need…” instead of explanations or accusations.",
-      "If spiraling, request a 10-minute reset with a promised return time."
-    ],
-    IndependentConnector: [
-      "Ask for thinking space and set a clear return time (e.g., “20 minutes”).",
-      "Share one sentence of reassurance before taking space.",
-      "Come back with one concrete request and one compromise."
-    ],
-    GuardedConnector: [
-      "Start with micro-trust gestures (keep one small promise daily).",
-      "Name one safe topic you can open up about this week.",
-      "Use written notes for tough truths, then discuss with kindness."
-    ]
-  }[bondingKey] || [];
+  const tips = selfTips[bondingKey] || [];
   const acc = (bondingKey==="ReassuranceSeeker") ? { color: typeColors.Emotional, bg: typeOpac.Emotional }
             : (bondingKey==="IndependentConnector") ? { color: typeColors.Intellectual, bg: typeOpac.Intellectual }
             : (bondingKey==="GuardedConnector") ? { color: typeColors.Conflict, bg: typeOpac.Conflict }
@@ -746,16 +731,30 @@ function strategySelfCard(bondingKey){
   `;
 }
 
-/* Helpers */
+function rrAccent(label){
+  if(label==="Strong")   return { color:typeColors.Partnership, bg:typeOpac.Partnership };
+  if(label==="Moderate") return { color:typeColors.Commitment,  bg:typeOpac.Commitment  };
+  return { color:typeColors.Emotional, bg:typeOpac.Emotional };
+}
+function rrCard(p){
+  const acc = rrAccent(p.rrLabel);
+  return `
+    <div class="result-block" style="border-left-color:${acc.color}; background:${acc.bg};">
+      <strong>${p.name} — Respect &amp; Recognition:</strong> ${p.rrLabel} (${p.rrScore}/6)
+      <p style="margin:8px 0 0;">${rrStatement(p.rrScore)}</p>
+    </div>
+  `;
+}
 function rrStatement(score){
   if(score>=5) return "You generally feel affirmed, appreciated, respected, and validated—and you likely offer the same in return.";
   if(score>=3) return "You often feel appreciated and respected, though there may be moments when clearer affirmation would be meaningful.";
   return "You may not consistently feel affirmed or validated; be explicit about the kinds of appreciation that help you feel respected.";
 }
+
 function promptsBlock(items){
   return `
     <div class="prompt-block">
-      <strong>Discussion Prompts</strong>
+      <strong>Reflection Prompts</strong>
       <ul class="results-list" style="margin-top:6px;">
         ${items.map(li=>`<li>${li}</li>`).join("")}
       </ul>
